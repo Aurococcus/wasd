@@ -1,0 +1,32 @@
+# Compiled Python Bytecode
+*.py[cod]
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+ghostdriver.log
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+__pycache__
+
+# Installer logs
+pip-log.txt
+.swp
+
+# py.test
+.cache/*
+.pytest_cache/*
+.pytest_config
+
+# Developer
+.vscode/
+.python-version
