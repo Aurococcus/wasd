@@ -18,7 +18,8 @@ setup(
         'pytest>=5.3.5;python_version>="3"',
         'selenium>=3.141.0',
         'lxml',
-        'cssselect'
+        'cssselect',
+        'pyyaml'
     ],
     entry_points={
         'console_scripts': [
