@@ -24,6 +24,7 @@ def main():
     os.mkdir(dir_name)
     os.mkdir(test_dir)
     os.mkdir(env_dir)
+    os.mkdir(f"{dir_name}/config")
 
     #
     # pytest.ini
@@ -53,13 +54,13 @@ def main():
     data.append("class MyExtendedBrowser(Browser):")
     data.append("   def __init__(self):")
     data.append("       super().__init__()")
+    data.append("")
     data.append("   def my_super_fn(self):")
     data.append("       print('Hello')")
     data.append("\n")
     data.append("@pytest.fixture(scope='class')")
     data.append("def browser():")
     data.append("   b = MyExtendedBrowser()")
-    data.append("   b.get_driver()")
     data.append("   yield b")
     data.append("   b.close_driver()")
     data.append("")
@@ -170,14 +171,14 @@ def main():
     data.append("-e TZ=Asia/Novosibirsk                          \\")
     data.append("aerokube/selenoid:latest-release -limit 10'''")
     data.append("    c.run(selenod)")
-    data.append("")
+    data.append("\n")
     data.append("    selenod_ui='''docker run -d --rm    \\")
     data.append("--name selenoid-ui                      \\")
     data.append("--link selenoid                         \\")
     data.append("-p 8080:8080                            \\")
     data.append("aerokube/selenoid-ui --selenoid-uri=http://selenoid:4444'''")
     data.append("    c.run(selenod_ui)")
-    data.append("")
+    data.append("\n")
     data.append("@task")
     data.append("def selenoid_down(c):")
     data.append("    c.run('docker stop selenoid')")
@@ -193,7 +194,30 @@ def main():
     file_path = f'{dir_name}/tasks.py'
     with open(file_path, 'w+') as f:
         f.writelines("\n".join(data))
-    
+
+
+    #
+    # selenoid config
+    #
+    data = []
+    data.append('{')
+    data.append('    "chrome": {')
+    data.append('        "default": "74.0",')
+    data.append('        "versions": {')
+    data.append('            "74.0": {')
+    data.append('                "image": "selenoid/vnc_chrome:74.0",')
+    data.append('                "port": "4444",')
+    data.append('                "path": "/",')
+    data.append('                "env" : ["TZ=Asia/Novosibirsk", "ENABLE_WINDOW_MANAGER=1"]')
+    data.append('            }')
+    data.append('        }')
+    data.append('    }')
+    data.append('}')
+    data.append("")
+        
+    file_path = f'{dir_name}/config/browsers.json'
+    with open(file_path, 'w+') as f:
+        f.writelines("\n".join(data))
 
     #
     # requirements.txt

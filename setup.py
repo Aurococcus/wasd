@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='wasd',
-    version='1.0.0',
+    version='1.0.1',
     description='The Kostyan Selenium Wrapper',
     url='https://example.com',
     author='Kostyan Opasnost',
@@ -20,7 +20,9 @@ setup(
         'lxml',
         'cssselect',
         'pyyaml',
-        'invoke'
+        'invoke',
+        'colorlog',
+        'pyhamcrest'
     ],
     entry_points={
         'console_scripts': [
