@@ -3,10 +3,16 @@ import sys
 
 
 def show_usage():
-    print('wasd scaffold')
+    print('Type "wasd scaffold" for generate default config, directory stucture and sample test.')
+    print('* (Use "pytest" for running tests) *\n')
 
 
 def main():
+    num_args = len(sys.argv)
+    if num_args <= 1 or num_args > 2:
+        show_usage()
+        return
+
     dir_name = sys.argv[-1]
 
     if os.path.exists(os.getcwd() + '/' + dir_name):
@@ -111,7 +117,7 @@ def main():
     #
     data = []
     data.append("# web driver")
-    data.append("url: 'http://bg-back-test.k8.sccloud.ru'")
+    data.append("url: 'http://example.ru'")
     data.append("implicit_timeout: 5")
     data.append("window_size: 'maximize'")
     data.append("")

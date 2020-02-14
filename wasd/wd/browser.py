@@ -69,8 +69,6 @@ class Browser:
             self._driver_instance.implicitly_wait(5)
             self._driver_instance.maximize_window()
 
-            print("\tcommand_executor:", command_executor)
-
         return self._driver_instance
 
 
