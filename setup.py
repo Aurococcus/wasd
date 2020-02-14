@@ -19,7 +19,8 @@ setup(
         'selenium>=3.141.0',
         'lxml',
         'cssselect',
-        'pyyaml'
+        'pyyaml',
+        'invoke'
     ],
     entry_points={
         'console_scripts': [

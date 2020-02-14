@@ -9,7 +9,7 @@ def show_usage():
 
 def main():
     num_args = len(sys.argv)
-    if num_args <= 1 or num_args > 2:
+    if num_args <= 2 or num_args > 3:
         show_usage()
         return
 
@@ -143,7 +143,6 @@ def main():
     data.append("        args: ['--disable-infobars']")
     data.append("")
 
-
     file_path = f'{env_dir}/stable.yml'
     with open(file_path, 'w+') as f:
         f.writelines("\n".join(data))
@@ -151,3 +150,59 @@ def main():
     file_path = f'{dir_name}/_settings.yml'
     with open(file_path, 'w+') as f:
         f.writelines("\n".join(data))
+
+
+    #
+    # tasks
+    #
+    data = []
+    data.append("from invoke import Collection, task")
+    data.append("")
+    data.append("@task")
+    data.append("def selenoid_up(c):")
+    data.append("    selenod='''docker run -d --rm               \\")
+    data.append("--name selenoid                                 \\")
+    data.append("-p 4444:4444                                    \\")
+    data.append("-v /var/run/docker.sock:/var/run/docker.sock    \\")
+    data.append("-v `pwd`/config/:/etc/selenoid/:ro              \\")
+    data.append("-v `pwd`/video/:/opt/selenoid/video/            \\")
+    data.append("-e OVERRIDE_VIDEO_OUTPUT_DIR=`pwd`/video/       \\")
+    data.append("-e TZ=Asia/Novosibirsk                          \\")
+    data.append("aerokube/selenoid:latest-release -limit 10'''")
+    data.append("    c.run(selenod)")
+    data.append("")
+    data.append("    selenod_ui='''docker run -d --rm    \\")
+    data.append("--name selenoid-ui                      \\")
+    data.append("--link selenoid                         \\")
+    data.append("-p 8080:8080                            \\")
+    data.append("aerokube/selenoid-ui --selenoid-uri=http://selenoid:4444'''")
+    data.append("    c.run(selenod_ui)")
+    data.append("")
+    data.append("@task")
+    data.append("def selenoid_down(c):")
+    data.append("    c.run('docker stop selenoid')")
+    data.append("    c.run('docker stop selenoid-ui')")
+    data.append("")
+    data.append("ns = Collection()")
+    data.append("selenoid = Collection('selenoid')")
+    data.append("selenoid.add_task(selenoid_up, 'up')")
+    data.append("selenoid.add_task(selenoid_down, 'down')")
+    data.append("ns.add_collection(selenoid)")
+    data.append("")
+
+    file_path = f'{dir_name}/tasks.py'
+    with open(file_path, 'w+') as f:
+        f.writelines("\n".join(data))
+    
+
+    #
+    # requirements.txt
+    #
+    data = []
+    data.append('wasd')
+    data.append('')
+    
+    file_path = f'{dir_name}/requirements.txt'
+    with open(file_path, 'w+') as f:
+        f.writelines("\n".join(data))
+    
