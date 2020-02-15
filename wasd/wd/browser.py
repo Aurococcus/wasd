@@ -13,6 +13,7 @@ from selenium.webdriver.common.keys import Keys
 from wasd.core import SettingsManager
 from wasd.wd.element import Element
 from wasd.common import LOGGER
+from wasd.wd.listener import ElementHighlightListener
 
 
 
@@ -31,10 +32,14 @@ class Browser:
             SettingsManager.get('port'),
             SettingsManager.get('path')
         )
-        self._driver_instance = webdriver.Remote(
+        
+        remote_driver = webdriver.Remote(
             command_executor=command_executor,
             desired_capabilities=SettingsManager.get('capabilities')
         )
+
+        self._driver_instance = EventFiringWebDriver(remote_driver, ElementHighlightListener())
+
         self._driver_instance.implicitly_wait(SettingsManager.get('implicit_timeout'))
         self._driver_instance.maximize_window()
 
