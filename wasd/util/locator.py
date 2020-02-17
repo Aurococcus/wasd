@@ -6,7 +6,6 @@ class Locator:
 
     minimal_xml = '<!DOCTYPE _[<!ELEMENT _ EMPTY>]><_/>'
 
-
     @classmethod
     def contains(cls, element, *text):
         """
@@ -15,15 +14,15 @@ class Locator:
         """
         condition = ""
         for string in text:
-            condition += "[contains(., %s)]" % GenericTranslator().xpath_literal(string)
+            condition += "[contains(., {})]".format(
+                GenericTranslator().xpath_literal(string)
+            )
 
         xpath = '{0}{1}'.format(
             cls.to_xpath(element),
             condition
         )
-        
         return xpath
-
 
     @classmethod
     def equal(cls, element, text):
@@ -33,7 +32,6 @@ class Locator:
         )
         return xpath
 
-    
     @classmethod
     def element_at(cls, locator, position):
         """
@@ -46,10 +44,9 @@ class Locator:
             position = 'last()-{0}'.format(abs(position))
 
         if position == 0:
-            raise ValueError('0 is not valid element position. XPath expects first element to have index 1')
-            
+            raise ValueError('0 is not valid element position. '
+                             'XPath expects first element to have index 1')
         return "({0})[position()={1}]".format(cls.to_xpath(locator), position)
-
 
     @classmethod
     def to_xpath(cls, selector):
@@ -64,7 +61,6 @@ class Locator:
                 return selector
         return None
 
-
     @classmethod
     def is_xpath(cls, selector):
         """
@@ -76,7 +72,6 @@ class Locator:
         except etree.XPathEvalError:
             return False
         return True
-
 
     @classmethod
     def is_css(cls, selector):

@@ -1,10 +1,40 @@
 from setuptools import setup, find_packages
+from pathlib import Path
+import sys
+import os
+
+
+long_description = None
+this_directory = Path(__file__).parent.absolute()
+
+try:
+    with open(this_directory.joinpath('README.md'), 'rb') as f:
+        long_description = f.read().decode('utf-8')
+except IOError:
+    long_description = 'See https://github.com/Aurococcus/wasd'
+
+
+if sys.argv[-1] == 'publish':
+    print("\n*** Cleanup dist: ***")
+    os.system('rm -rf dist/ build/')
+
+    print("\n*** Creating new tar/wheel: ***\n")
+    os.system('python setup.py sdist bdist_wheel')
+    
+    print("\n*** Publishing to PyPI: ***\n")
+    os.system('python -m twine upload dist/*')  # Requires ~/.pypirc Keys
+
+    print("\n*** Release published successfully. ***\n")
+
+    sys.exit()
 
 
 setup(
     name='wasd',
-    version='1.0.1',
+    version='1.0.5',
     description='The Kostyan Selenium Wrapper',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/Aurococcus/wasd',
     author='Kostyan Opasnost',
     author_email='aurococcus@gmail.com',

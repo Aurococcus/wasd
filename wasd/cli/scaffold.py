@@ -3,7 +3,8 @@ import sys
 
 
 def show_usage():
-    print('Type "wasd scaffold" for generate default config, directory stucture and sample test.')
+    print('Type "wasd scaffold" for generate default config, '
+          'directory stucture and sample test.')
     print('* (Use "pytest" for running tests) *\n')
 
 
@@ -69,7 +70,6 @@ def main():
     with open(file_path, 'w+') as f:
         f.writelines("\n".join(data))
 
-
     #
     # test file
     #
@@ -112,7 +112,6 @@ def main():
     # data.append('        return self')
     # data.append("")
 
-
     #
     # _env & settings
     #
@@ -151,7 +150,6 @@ def main():
     file_path = f'{dir_name}/_settings.yml'
     with open(file_path, 'w+') as f:
         f.writelines("\n".join(data))
-
 
     #
     # tasks
@@ -195,7 +193,6 @@ def main():
     with open(file_path, 'w+') as f:
         f.writelines("\n".join(data))
 
-
     #
     # selenoid config
     #
@@ -225,7 +222,7 @@ def main():
     data = []
     data.append('wasd')
     data.append('')
-    
+
     file_path = f'{dir_name}/requirements.txt'
     with open(file_path, 'w+') as f:
         f.writelines("\n".join(data))

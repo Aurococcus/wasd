@@ -4,7 +4,6 @@ import os
 from wasd.core import session
 
 
-
 class SettingsManager:
 
     _default_config_file = session.root_dir.joinpath('_settings.yml')
@@ -18,15 +17,13 @@ class SettingsManager:
         'window_size':      '800x600'
     }
 
-
     @classmethod
     def init(cls, env):
         cls._load_env_file(env)
         cls._parse_window_size()
 
-
     @classmethod
-    def _load_env_file(cls, env = None):
+    def _load_env_file(cls, env=None):
         if env is not None:
             env_file = session.env_dir.joinpath(f'{env}.yml')
         else:
@@ -34,17 +31,15 @@ class SettingsManager:
 
         with open(env_file) as f:
             data = f.read()
-        
+
         cls._config = {
             **cls._default_config,
             **cls._prepare_config(yaml.safe_load(data))
         }
 
-
     @classmethod
     def get(cls, k):
         return cls._config[k]
-
 
     @classmethod
     def _prepare_config(cls, d):
@@ -55,12 +50,17 @@ class SettingsManager:
                 if isinstance(v, list):
                     for i, _ in enumerate(v, start=0):
                         if isinstance(_, str):
-                            d[k][i] = re.sub(r'%(\w+)%', lambda match: os.environ[match.group(1)], v[i])
+                            d[k][i] = re.sub(
+                                r'%(\w+)%',
+                                lambda match: os.environ[match.group(1)], v[i]
+                            )
                 else:
                     if isinstance(v, str):
-                        d[k] = re.sub(r'%(\w+)%', lambda match: os.environ[match.group(1)], v)
+                        d[k] = re.sub(
+                            r'%(\w+)%',
+                            lambda match: os.environ[match.group(1)], v
+                        )
         return d
-
 
     @classmethod
     def _parse_window_size(cls):
