@@ -5,7 +5,7 @@ setup(
     name='wasd',
     version='1.0.1',
     description='The Kostyan Selenium Wrapper',
-    url='https://example.com',
+    url='https://github.com/Aurococcus/wasd',
     author='Kostyan Opasnost',
     author_email='aurococcus@gmail.com',
     maintainer='Kostyan',
