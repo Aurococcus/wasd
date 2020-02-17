@@ -690,7 +690,7 @@ class Browser:
         context = self._driver_instance
         try:
             if element.ctx is not None:
-                context = element.ctx.find()
+                context = self.find(element.ctx)
             if element.by == 'xpath':
                 if element.val.startswith('/'):
                     return context.find_element('xpath', f".{element.val}")
@@ -706,7 +706,7 @@ class Browser:
         context = self._driver_instance
         try:
             if element.ctx is not None:
-                context = element.ctx.find()
+                context = self.find(element.ctx)
         except NoSuchElementException as e:
             e.msg = f"No such element: Unable to locate element: {element}"
             raise
