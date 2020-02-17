@@ -14,6 +14,7 @@ from wasd.core import SettingsManager
 from wasd.wd.element import Element
 from wasd.common import LOGGER
 from wasd.wd.listener import ElementHighlightListener
+from selenium.webdriver.support.events import EventFiringWebDriver
 
 
 
