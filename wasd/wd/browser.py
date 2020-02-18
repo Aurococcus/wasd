@@ -15,6 +15,7 @@ from wasd.wd.element import Element
 from wasd.common import LOGGER
 from wasd.wd.listener import ElementHighlightListener
 from selenium.webdriver.support.events import EventFiringWebDriver
+from wasd.core import session
 
 
 
@@ -39,7 +40,10 @@ class Browser:
             desired_capabilities=SettingsManager.get('capabilities')
         )
 
-        self._driver_instance = EventFiringWebDriver(remote_driver, ElementHighlightListener())
+        if session.use_listener:
+            self._driver_instance = EventFiringWebDriver(remote_driver, ElementHighlightListener())
+        else:
+            self._driver_instance = remote_driver
 
         self._driver_instance.implicitly_wait(SettingsManager.get('implicit_timeout'))
         self._driver_instance.maximize_window()
