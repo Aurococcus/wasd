@@ -115,6 +115,18 @@ class Browser:
             self._driver_instance.refresh()
 
 
+    def grab_console_log(self):
+        '''
+        Получить лог браузерной консоли. Буффер очищается после каждого запроса.
+
+        Returns:
+            list[str]: список строк
+        '''
+        with self._step("Grab browser console log"):
+            return self._driver_instance.get_log('browser')
+
+
+
     def grab_page_html(self):
         """
         Возвращает html всей страницы.
