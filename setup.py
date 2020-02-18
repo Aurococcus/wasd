@@ -31,7 +31,7 @@ if sys.argv[-1] == 'publish':
 
 setup(
     name='wasd',
-    version='1.0.5',
+    version='1.0.6',
     description='The Kostyan Selenium Wrapper',
     long_description=long_description,
     long_description_content_type='text/markdown',
