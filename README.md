@@ -4,14 +4,20 @@
 
 * python >= 3.6
 * pyenv is recommended ([pyenv](https://github.com/pyenv/pyenv) & [pyenv virtualenv plugin](https://github.com/pyenv/pyenv-virtualenv))
-* Docker with pulled image `selenoid/vnc_chrome:##:#` (https://hub.docker.com/r/selenoid/vnc_chrome)
+* Docker with pulled image `selenoid/vnc_chrome:##.#` (https://hub.docker.com/r/selenoid/vnc_chrome)
 
 ## Install
 
+Build from source:
 ```sh
 $ git clone git@github.com:Aurococcus/wasd.git
-cd wasd
-pip install .
+$ cd wasd
+$ pip install .
+```
+
+From pypi:
+```sh
+$ pip install wasd
 ```
 
 ## Run
