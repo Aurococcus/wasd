@@ -12,7 +12,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from wasd.core import SettingsManager
 from wasd.wd.element import Element
-from wasd.common import LOGGER
+from wasd.common import LOGGER, _step
 from wasd.wd.listener import ElementHighlightListener
 from selenium.webdriver.support.events import EventFiringWebDriver
 from wasd.core import session
@@ -63,16 +63,16 @@ class Browser:
             self._driver_instance = None
 
 
-    @contextmanager
-    def _step(self, message, limit = None):
-        term_width = shutil.get_terminal_size().columns
+    # @contextmanager
+    # def _step(self, message, limit = None):
+    #     term_width = shutil.get_terminal_size().columns
         
-        msg = message[:limit] if limit else message[:term_width * 3]
-        if len(msg) < len(message):
-            msg += " ..."
+    #     msg = message[:limit] if limit else message[:term_width * 3]
+    #     if len(msg) < len(message):
+    #         msg += " ..."
 
-        LOGGER.log(60, msg)
-        yield
+    #     LOGGER.log(60, msg)
+    #     yield
 
 
     def open(self, path):
@@ -89,7 +89,7 @@ class Browser:
             >>> browser.open("/admin")
             # В админку
         """
-        with self._step(f"Navigate to {path}"):
+        with _step(f"Navigate to {path}"):
             self._driver_instance.get( urljoin(SettingsManager.get('url'), path) )
 
 
@@ -103,7 +103,7 @@ class Browser:
         Examples:
             >>> browser.open_url("https://google.com")
         """
-        with self._step(f"Navigate to URL {url}"):
+        with _step(f"Navigate to URL {url}"):
             self._driver_instance.get(url)
 
 
@@ -111,7 +111,7 @@ class Browser:
         """
         Обновляет страницу
         """
-        with self._step("Refresh page"):
+        with _step("Refresh page"):
             self._driver_instance.refresh()
 
 
@@ -123,7 +123,7 @@ class Browser:
         Returns:
             list[str]: список строк
         '''
-        with self._step("Grab browser console log"):
+        with _step("Grab browser console log"):
             return self._driver_instance.get_log('browser')
 
 
@@ -135,7 +135,7 @@ class Browser:
         Returns:
             str: html
         """
-        with self._step("Grab page html"):
+        with _step("Grab page html"):
             return self._driver_instance.page_source
 
 
@@ -146,7 +146,7 @@ class Browser:
         Returns:
             str: html
         """
-        with self._step(f"Grab html from {element}"):
+        with _step(f"Grab html from {element}"):
             el = self._match_first_or_fail(element)
             return el.get_attribute('outerHTML')
 
@@ -161,7 +161,7 @@ class Browser:
         Examples:
             >>> browser.clear_field(Element("#input"))
         """
-        with self._step(f"Clear field {input_element}"):
+        with _step(f"Clear field {input_element}"):
             el = self._match_first_or_fail(input_element)
             el.clear()
 
@@ -177,7 +177,7 @@ class Browser:
         Examples:
             >>> browser.fill_field(Element("//input[@type='text']"), "Hello World!")
         """
-        with self._step(f"Fill field {element} with '{text}'"):
+        with _step(f"Fill field {element} with '{text}'"):
             el = self._match_first_or_fail(element)
             el.clear()
             el.send_keys(text)
@@ -195,7 +195,7 @@ class Browser:
         Examples:
             >>> browser.fill_field(Element("//input[@type='text']"), "Hello World!", 0.2)
         """
-        with self._step(f"Fill field {element} with '{text}' & delay '{delay}'"):
+        with _step(f"Fill field {element} with '{text}' & delay '{delay}'"):
             field = self._match_first_or_fail(element)
             for ch in text:
                 field.send_keys(ch)
@@ -227,7 +227,7 @@ class Browser:
             >>> browser.press_key(field, Keys.BACKSPACE)
             ol
         """
-        with self._step(f"Press keys {chars} on {element}"):
+        with _step(f"Press keys {chars} on {element}"):
             el = self._match_first_or_fail(element)
             for char in chars:
                 el.send_keys(*self._convert_key_modifier(char))
@@ -244,7 +244,7 @@ class Browser:
         Examples:
             >>> browser.append_field(Find('#field'), 'foo bar baz')
         """
-        with self._step(f"Append field {element}, '{text}'"):
+        with _step(f"Append field {element}, '{text}'"):
             field = self._match_first_or_fail(element)
             field.send_keys(text)
 
@@ -265,7 +265,7 @@ class Browser:
             >>> browser.wait_for_element_visible(Element("#header", 15))
 
         """
-        with self._step(f"Wait for element visible {element}"):
+        with _step(f"Wait for element visible {element}"):
             condition = EC.visibility_of_element_located(element.locator())
             self.wd_wait(timeout).until(condition)
 
@@ -285,7 +285,7 @@ class Browser:
         Examples:
             >>> browser.wait_for_element_not_visible(Element("#header", 15))
         """
-        with self._step(f"Wait for element not visible {element}"):
+        with _step(f"Wait for element not visible {element}"):
             condition = EC.invisibility_of_element_located(element.locator())
             self.wd_wait(timeout).until(condition)
 
@@ -303,7 +303,7 @@ class Browser:
             >>> browser.see_element(Element("tr"))
             >>> browser.see_element(Element("tr"), {"some-attr": "some-value"})
         """
-        with self._step(f"See element {element}, {attributes}"):
+        with _step(f"See element {element}, {attributes}"):
             self._enable_implicit_wait()
             els = self._match_visible(element)
             self._disable_implicit_wait()
@@ -324,7 +324,7 @@ class Browser:
             >>> browser.see_text("Администрирование")
             >>> browser.see_text("Выйти", Element("h1"))
         """
-        with self._step(f"See text in {element}"):
+        with _step(f"See text in {element}"):
             self._enable_implicit_wait()
             text_from_page = self.grab_visible_text(element)
             self._disable_implicit_wait()
@@ -342,7 +342,7 @@ class Browser:
         Examples:
             >>> browser.see_in_field(Element("input#foo"), "Hello World!")
         """
-        with self._step(f"See text '{needle}' in field {input_element}"):
+        with _step(f"See text '{needle}' in field {input_element}"):
             val = self.grab_value_from(input_element)
             assert_that(val, equal_to(needle))
 
@@ -361,7 +361,7 @@ class Browser:
             >>> browser.grab_visible_text()
             >>> browser.grab_visible_text(Element("h1"))
         """
-        with self._step(f"Get visible text from {element}"):
+        with _step(f"Get visible text from {element}"):
             if element is not None:
                 return self.grab_text_from(element)
 
@@ -382,7 +382,7 @@ class Browser:
         Examples:
             >>> browser.click(Element("#logout"))
         """ 
-        with self._step(f"Click {element}"):
+        with _step(f"Click {element}"):
             self._match_first_or_fail(element).click()
 
 
@@ -399,7 +399,7 @@ class Browser:
         Examples:
             >>> browser.grab_visible(Element("th"))
         """
-        with self._step(f"Grab visible {element}"):
+        with _step(f"Grab visible {element}"):
             return self._match_visible(element)
 
 
@@ -416,7 +416,7 @@ class Browser:
         Examples:
             >>> browser.grab_text_from(Element("h1"))
         """
-        with self._step(f"Grab text from {element}"):
+        with _step(f"Grab text from {element}"):
             el = self._match_first_or_fail(element)
             return el.text
 
@@ -438,7 +438,7 @@ class Browser:
             >>> browser.grab_attribute_from(Element('#tooltip'), 'title')
             "hello_world"
         """
-        with self._step(f"Grab attribute from {element}"):
+        with _step(f"Grab attribute from {element}"):
             el = self._match_first_or_fail(element)
             return el.get_attribute(attribute)
 
@@ -460,7 +460,7 @@ class Browser:
             >>> browser.grab_value_from(Element('#login'))
             "ivanov"
         """
-        with self._step(f"Grab value from {input_element}"):
+        with _step(f"Grab value from {input_element}"):
             el = self._match_first_or_fail(input_element)
             return el.get_attribute('value')
 
@@ -486,7 +486,7 @@ class Browser:
             >>> browser.grab_multiple( Element('tr') )
             ["foo", "bar", "qaz"]
         """
-        with self._step(f"Grab multiple {elements}"):
+        with _step(f"Grab multiple {elements}"):
             els = self._match(elements)
             return list(map(lambda el: el.text, els))
 
@@ -498,7 +498,7 @@ class Browser:
         Args:
             element (Element): элемент
         """
-        with self._step(f"Move mouse over {element}"):
+        with _step(f"Move mouse over {element}"):
             el = self._match_first_or_fail(element)
             ActionChains(self._driver_instance).move_to_element(el).perform()
 
@@ -518,7 +518,7 @@ class Browser:
             >>> browser.switch_to_iframe(frame)
             >>> browser.switch_to_iframe() # в родительский фрейм
         """
-        with self._step(f"Switch to iframe {frame}"):
+        with _step(f"Switch to iframe {frame}"):
             if frame is not None:
                 el = self._match_first_or_fail(frame)
                 self._driver_instance.switch_to.frame(el)
@@ -546,7 +546,7 @@ class Browser:
             >>>     browser.click( Element("#submit") )
             >>>     browser.save_session_snapshot("login")
         """
-        with self._step(f"Save session snapshot '{name}'"):
+        with _step(f"Save session snapshot '{name}'"):
             self._session_snapshots[name] = self._driver_instance.get_cookies()
 
 
@@ -561,7 +561,7 @@ class Browser:
         Returns:
             bool
         """
-        with self._step(f"Load session snapshot '{name}'"):
+        with _step(f"Load session snapshot '{name}'"):
             if name not in self._session_snapshots:
                 return False
 
@@ -588,7 +588,7 @@ class Browser:
                     - secure
                     - httpOnly
         """
-        with self._step(f"Set cookie '{name}': '{value}'"):
+        with _step(f"Set cookie '{name}': '{value}'"):
             params["name"] = name
             params["value"] = value
 
@@ -626,7 +626,7 @@ class Browser:
             offset_x    (int, optional): смещение по X (px)
             offset_y    (int, optional): смещение по Y (px)
         """
-        with self._step(f"Scroll to {element}"):
+        with _step(f"Scroll to {element}"):
             el = self._match_first_or_fail(element)
             x = el.location['x'] + offset_x
             y = el.location['y'] + offset_y
@@ -634,7 +634,7 @@ class Browser:
 
 
     def scroll_into_view(self, element, offset_x = 0, offset_y = 0):
-        with self._step("Scroll into view"):
+        with _step("Scroll into view"):
             el = self._match_first_or_fail(element)
             self.execute_js(f"arguments[0].scrollIntoView({offset_x}, {offset_y})", el)
 
@@ -643,7 +643,7 @@ class Browser:
         """
         Удаляет все куки.
         """
-        with self._step("Delete all cookies"):
+        with _step("Delete all cookies"):
             self._driver_instance.delete_all_cookies()
 
 
@@ -665,7 +665,7 @@ class Browser:
             >>> browser.execute_js(script, browser.find(Element("#tooltip")))
             "foo"
         """
-        with self._step(f"Execute JS '{script}'"):
+        with _step(f"Execute JS '{script}'"):
             return self._driver_instance.execute_script(script, *args)
 
 
@@ -679,7 +679,7 @@ class Browser:
         Raises:
             Exception: Если передали больше 1000 сек.
         """
-        with self._step(f"Sleep {secs}"):
+        with _step(f"Sleep {secs}"):
             if secs >= 1000:
                 raise Exception("Waiting for more then 1000 seconds: 16.6667 mins")
             time.sleep(secs)

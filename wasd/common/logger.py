@@ -1,6 +1,9 @@
 import logging
 import colorlog
+import shutil
+from contextlib import contextmanager
 
+STEP = 60
 
 formatter = colorlog.ColoredFormatter(
     "\n%(log_color)s[%(levelname)8s] %(message)s",
@@ -18,7 +21,7 @@ formatter = colorlog.ColoredFormatter(
     style='%'
     )
 
-logging.addLevelName(60, 'STEP')
+logging.addLevelName(STEP, 'STEP')
 
 handler = colorlog.StreamHandler()
 handler.setFormatter(formatter)
@@ -26,3 +29,15 @@ handler.setFormatter(formatter)
 LOGGER = colorlog.getLogger(__name__)
 LOGGER.addHandler(handler)
 LOGGER.setLevel(logging.DEBUG)
+
+
+@contextmanager
+def _step(message, limit = None):
+    term_width = shutil.get_terminal_size().columns
+    
+    msg = message[:limit] if limit else message[:term_width * 3]
+    if len(msg) < len(message):
+        msg += " ..."
+
+    LOGGER.log(STEP, msg)
+    yield
