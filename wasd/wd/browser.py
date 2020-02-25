@@ -118,6 +118,7 @@ class Browser:
     def grab_console_log(self):
         '''
         Получить лог браузерной консоли. Буффер очищается после каждого запроса.
+        Требует сapability ``loggingPrefs: { browser: 'INFO' }``.
 
         Returns:
             list[str]: список строк
