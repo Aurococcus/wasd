@@ -1,1 +1,2 @@
-from .logger import LOGGER, _step
+from .logger import LOGGER, log_step
+

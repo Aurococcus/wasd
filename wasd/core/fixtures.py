@@ -13,3 +13,7 @@ def init_settings_fixture(request):
     session.env = request.config.getoption("--env")
     session.use_listener = True if request.config.getoption("--listener") is not None else False
     SettingsManager.init(session.env)
+
+
+def pytest_runtest_logstart(nodeid, location):
+    print("\n", end='')
