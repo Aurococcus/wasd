@@ -3,6 +3,7 @@ import colorlog
 import shutil
 from contextlib import contextmanager
 import inspect
+from termcolor import colored, cprint
 
 
 STEP = 60
@@ -35,40 +36,47 @@ LOGGER.setLevel(logging.DEBUG)
 
 
 def __log_substep(message, indent=4, limit=None):
-    LOGGER.debug( _prep_msg(message, indent, limit))
+    cprint(_prep_msg(message, indent, limit), 'cyan')
 
 
-def __log_step(message, indent=0, limit=None):
-    LOGGER.log(STEP, _prep_msg(message, indent, limit))
+def __log_step(message, indent=1, limit=None):
+    cprint(_prep_msg(message, indent, limit), 'green', attrs=['bold'])
 
 
-__c_frame = 0 # curr
-__p_frame = 0 # prev
+__c_frame = 0
+__p_frame = 0
+__c_lvl = 0
+__p_lvl = 0
 
 
 def log_step(message, indent=0, limit=None):
-    global __c_frame, __p_frame
-
+    global __c_frame, __p_frame, __c_lvl, __p_lvl
 
     lvl = 0
     while inspect.stack()[lvl].function not in ['pytest_pyfunc_call', 'call_fixture_func']:
         lvl += 1
     lvl -= 2
+    __c_lvl = inspect.stack()[lvl+1].frame.f_lineno
 
 
     __c_frame = id(inspect.stack()[lvl].frame)
     if lvl == 1:
         __log_step(message)
     else:
+        human_str = ' '.join([ i.capitalize() for i in inspect.stack()[lvl].function.split('_') ])
+        frame = inspect.stack()[lvl].frame
+        args, _, _, values = inspect.getargvalues(frame)
+        argspec = ', '.join([ f"'{values[i]}'" for i in args[1:] ])
         if __c_frame != __p_frame:
-            human_str = ' '.join([ i.capitalize() for i in inspect.stack()[lvl].function.split('_') ])
-            frame = inspect.stack()[lvl].frame
-            args, _, _, values = inspect.getargvalues(frame)
-            argspec = ', '.join([ f"'{values[i]}'" for i in args[1:] ])
             __log_step(human_str + " " + argspec)
+        else:
+            if __c_lvl != __p_lvl:
+                __log_step(human_str + " " + argspec)
+        
         __log_substep(message)
 
     __p_frame = __c_frame
+    __p_lvl = __c_lvl
 
 
 def _prep_msg(message, indent, limit):

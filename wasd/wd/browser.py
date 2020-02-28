@@ -77,8 +77,9 @@ class Browser:
             >>> browser.open("/admin")
             # В админку
         """
-        log_step(f"Navigate to {path}")
-        self._driver_instance.get( urljoin(SettingsManager.get('url'), path) )
+        url = urljoin(SettingsManager.get('url'), path)
+        log_step(f"Navigate to {url}")
+        self._driver_instance.get(url)
 
 
     def open_url(self, url):

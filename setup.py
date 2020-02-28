@@ -59,7 +59,8 @@ setup(
         'pyyaml',
         'invoke',
         'colorlog',
-        'pyhamcrest'
+        'pyhamcrest',
+        'termcolor'
     ],
     entry_points={
         'console_scripts': [
