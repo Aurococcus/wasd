@@ -1,0 +1,24 @@
+from page.base_page import BasePage
+from wasd.wd import Element as E
+
+
+class HomePage(BasePage):
+
+    URL = "/"
+
+    login_form      = E("#signin")
+    username_field  = E('#username', login_form)
+    password_field  = E("input[name = 'password']", login_form)
+    login_button    = E("input[type = 'submit']", login_form)
+
+
+    def login(self, username, password):
+        b = self.browser
+        b.fill_field(self.username_field, username)
+        b.fill_field(self.password_field, password)
+        b.click(self.login_button)
+
+
+    def validate(self):
+        b = self.browser
+        b.wait_for_element_not_visible(self.login_form, 5)

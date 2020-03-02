@@ -38,7 +38,7 @@ if sys.argv[-1] == 'publish':
 
 setup(
     name='wasd',
-    version='1.0.70',
+    version='1.0.71',
     description='The Kostyan Selenium Wrapper',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -62,6 +62,7 @@ setup(
         'pyhamcrest',
         'termcolor'
     ],
+    include_package_data = True,
     entry_points={
         'console_scripts': [
             "wasd = wasd.cli.scaffold:main"

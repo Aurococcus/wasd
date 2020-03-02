@@ -1,0 +1,25 @@
+# web driver
+url: 'http://example.com'
+implicit_timeout: 5
+window_size: 'maximize'
+
+# grid / selenoid
+protocol: 'http'
+host:     'localhost'
+port:     '4444'
+path:     '/wd/hub'
+
+# any data
+username: 'admin'
+password: 'admin'
+
+# caps
+capabilities:
+    browserName: 'chrome'
+    unexpectedAlertBehaviour: 'accept'
+    enableVNC: True
+    screenResolution: '1920x1080x24'
+    loggingPrefs:
+        browser: 'INFO'
+    chromeOptions:
+        args: ['--disable-infobars']

@@ -1,0 +1,15 @@
+import pytest
+from wasd.wd import Browser
+
+
+# Define custom action here
+class MyExtendedBrowser(Browser):
+    def my_super_fn(self):
+        print('Hello, World!')
+
+
+@pytest.fixture(scope='class')
+def browser():
+   browser = MyExtendedBrowser()
+   yield browser
+   browser.close_driver()

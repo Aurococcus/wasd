@@ -1,0 +1,13 @@
+{
+    "chrome": {
+        "default": "74.0",
+        "versions": {
+            "74.0": {
+                "image": "selenoid/vnc_chrome:74.0",
+                "port": "4444",
+                "path": "/",
+                "env" : ["TZ=Asia/Novosibirsk", "ENABLE_WINDOW_MANAGER=1"]
+            }
+        }
+    }
+}
