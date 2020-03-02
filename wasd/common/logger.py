@@ -22,10 +22,9 @@ formatter = colorlog.ColoredFormatter(
     },
     secondary_log_colors={},
     style='%'
-    )
+)
 
 logging.addLevelName(STEP, 'STEP')
-
 handler = colorlog.StreamHandler()
 handler.setFormatter(formatter)
 
@@ -33,14 +32,35 @@ LOGGER = colorlog.getLogger(__name__)
 LOGGER.addHandler(handler)
 LOGGER.setLevel(logging.DEBUG)
 
+#
+#
+#
+
+__fake_formatter = colorlog.ColoredFormatter(
+    "%(message)s",
+    reset=True,
+    style='%'
+)
+
+logging.addLevelName(1001, 'PRINT')
+__fake_handler = colorlog.StreamHandler()
+__fake_handler.setFormatter(__fake_formatter)
+
+__fake_logger = colorlog.getLogger('PRINT')
+__fake_logger.addHandler(__fake_handler)
+__fake_logger.setLevel(logging.DEBUG)
 
 
 def __log_substep(message, indent=4, limit=None):
-    cprint(_prep_msg(message, indent, limit), 'cyan')
+    global __fake_logger
+    text = colored(_prep_msg(message, indent, limit), 'cyan')
+    __fake_logger.log(61, text)
 
 
 def __log_step(message, indent=1, limit=None):
-    cprint(_prep_msg(message, indent, limit), 'green', attrs=['bold'])
+    global __fake_logger
+    text = colored(_prep_msg(message, indent, limit), 'green', attrs=['bold'])
+    __fake_logger.log(61, text)
 
 
 __c_frame = 0
@@ -57,9 +77,8 @@ def log_step(message, indent=0, limit=None):
         lvl += 1
     lvl -= 2
     __c_lvl = inspect.stack()[lvl+1].frame.f_lineno
-
-
     __c_frame = id(inspect.stack()[lvl].frame)
+    
     if lvl == 1:
         __log_step(message)
     else:
@@ -72,7 +91,7 @@ def log_step(message, indent=0, limit=None):
         else:
             if __c_lvl != __p_lvl:
                 __log_step(human_str + " " + argspec)
-        
+
         __log_substep(message)
 
     __p_frame = __c_frame

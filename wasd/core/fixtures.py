@@ -2,6 +2,7 @@ import pytest
 from wasd.core import SettingsManager
 from wasd.core import session
 from termcolor import colored, cprint
+from wasd.common.logger import __fake_logger
 
 
 def pytest_addoption(parser):
@@ -16,28 +17,26 @@ def init_settings_fixture(request):
     SettingsManager.init(session.env)
 
 
-def pytest_runtest_logstart(nodeid, location):
-    cprint('\nScenario --', 'yellow')
+@pytest.hookimpl(tryfirst=True)
+def pytest_runtest_setup(item):
+    __fake_logger.log(61, "\n" + item.pretty_id)
+    __fake_logger.log(61, colored('Scenario --', 'yellow'))
 
 
-def pytest_itemcollected(item):
-    test_id = item._nodeid
-
-    pretty_id = colored(item.parent.parent.name + ": ", 'magenta', attrs=['bold'])
+@pytest.hookimpl(tryfirst=True)
+def pytest_collection_modifyitems(config, items):
+    for item in items:
+        pretty_id = colored(item.parent.parent.name + ": ", 'magenta', attrs=['bold'])
     
-    # Если будет несколько маркеров, то просто брать последний, не кидая ошибку
-    want_to_list = list(filter(lambda m: m.name == 'want_to', item.own_markers))
-    if len(want_to_list) >= 1:
-        func_id = want_to_list[-1].args[0]
-    else:
-        splitted = item.name.split('_')
-        captalized = splitted[0].capitalize() + ' ' + ' '.join(splitted[1:])
-        func_id = captalized
+        # Если будет несколько маркеров, то просто брать последний, не кидая ошибку
+        want_to_list = list(filter(lambda m: m.name == 'want_to', item.own_markers))
+        if len(want_to_list) >= 1:
+            func_id = want_to_list[-1].args[0]
+        else:
+            splitted = item.name.split('_')
+            captalized = splitted[0].capitalize() + ' ' + ' '.join(splitted[1:])
+            func_id = captalized
 
-    pretty_id += colored(func_id, 'white', attrs=['bold'])
+        pretty_id += colored(func_id, 'white', attrs=['bold'])
 
-    pretty_id += "\n\r{0}: {1}".format(
-        colored('Test', 'green'),
-        colored(test_id, 'white')
-    )
-    item._nodeid = pretty_id
+        item.pretty_id = pretty_id

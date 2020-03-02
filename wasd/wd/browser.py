@@ -78,7 +78,7 @@ class Browser:
             # В админку
         """
         url = urljoin(SettingsManager.get('url'), path)
-        log_step(f"Navigate to {url}")
+        log_step(f"Open {url}")
         self._driver_instance.get(url)
 
 
@@ -92,7 +92,7 @@ class Browser:
         Examples:
             >>> browser.open_url("https://google.com")
         """
-        log_step(f"Navigate to URL {url}")
+        log_step(f"Open URL {url}")
         self._driver_instance.get(url)
 
 
