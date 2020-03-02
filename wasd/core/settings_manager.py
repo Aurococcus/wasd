@@ -2,6 +2,7 @@ import yaml
 import re
 import os
 from wasd.core import session
+from wasd.common import LOGGER
 
 
 class SettingsManager:
@@ -29,8 +30,12 @@ class SettingsManager:
         else:
             env_file = cls._default_config_file
 
-        with open(env_file) as f:
-            data = f.read()
+        try:
+            with open(env_file, 'r') as f:
+                data = f.read()
+        except IOError:
+            LOGGER.error(f"Env file '{env_file}' not found.")
+            raise
 
         cls._config = {
             **cls._default_config,

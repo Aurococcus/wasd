@@ -21,6 +21,13 @@ if sys.argv[-1] == 'publish':
     print("\n*** Creating new tar/wheel: ***\n")
     os.system('python setup.py sdist bdist_wheel')
     
+    try:
+        import twine
+        print('\n*** twine OK ***\n')
+    except ImportError:
+        print('\n*** Installing twine: ***\n')
+        os.system('python -m pip install twine')
+
     print("\n*** Publishing to PyPI: ***\n")
     os.system('python -m twine upload dist/*')  # Requires ~/.pypirc Keys
 
@@ -31,7 +38,7 @@ if sys.argv[-1] == 'publish':
 
 setup(
     name='wasd',
-    version='1.0.5',
+    version='1.0.61',
     description='The Kostyan Selenium Wrapper',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -52,7 +59,8 @@ setup(
         'pyyaml',
         'invoke',
         'colorlog',
-        'pyhamcrest'
+        'pyhamcrest',
+        'termcolor'
     ],
     entry_points={
         'console_scripts': [

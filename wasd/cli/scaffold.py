@@ -38,6 +38,7 @@ def main():
     data.append("markers =")
     data.append("    allure_description")
     data.append("    allure_title")
+    data.append("    want_to")
     data.append("")
 
     file_path = f'{dir_name}/pytest.ini'
