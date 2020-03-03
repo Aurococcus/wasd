@@ -57,7 +57,7 @@ def __log_substep(message, indent=4, limit=None):
     __fake_logger.log(61, text)
 
 
-def __log_step(message, indent=1, limit=None):
+def __log_step(message, indent=2, limit=None):
     global __fake_logger
     text = colored(_prep_msg(message, indent, limit), 'green', attrs=['bold'])
     __fake_logger.log(61, text)

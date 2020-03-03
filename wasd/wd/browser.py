@@ -1,5 +1,4 @@
 import time
-import shutil
 from urllib.parse import urljoin, urlparse
 from contextlib import contextmanager
 from hamcrest import *
@@ -12,7 +11,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from wasd.core import SettingsManager
 from wasd.wd.element import Element
-from wasd.common import LOGGER, log_step
+from wasd.common import log_step
 from wasd.wd.listener import ElementHighlightListener
 from selenium.webdriver.support.events import EventFiringWebDriver
 from wasd.core import session
@@ -334,6 +333,35 @@ class Browser:
         log_step(f"See text '{needle}' in field {input_element}")
         val = self.grab_value_from(input_element)
         assert_that(val, equal_to(needle))
+
+
+    def see_number_of_elements(self, element, expected):
+        """
+        Проверяет, что на странице определённое кол-во элементов.
+
+        Args:
+            element (Element): Элемент
+            expected (int|tuple): Ожидаемое кол-во
+
+        Returns:
+            None
+
+        Raises:
+            AssertionError
+
+        Examples:
+            >>> browser.see_number_of_elements( E('tr'), 10 )
+            >>> browser.see_number_of_elements( E('tr'), (4, 6) ) # Между 4 и 6, включительно
+        """
+        log_step(f"See number of elements {element}, {expected}")
+        count = len(self._match_visible(element))
+        if isinstance(expected, tuple):
+            a, b = expected
+            assert_that(a <= count <= b, is_(True),
+                        f'Number of elements expected to be in range {expected}, but was {count}')
+        else:
+            assert_that(count, equal_to(expected),
+                        f'Number of elements expected to be {expected}, but was {count}')
 
 
     def grab_visible_text(self, element = None):
@@ -698,11 +726,7 @@ class Browser:
         try:
             if element.ctx is not None:
                 context = self.find(element.ctx)
-            if element.by == 'xpath':
-                if element.val.startswith('/'):
-                    return context.find_element('xpath', f".{element.val}")
-                else:
-                    return context.find_element('xpath', f".//{element.val}")
+
             return context.find_element(*element.locator())
         except NoSuchElementException as e:
             e.msg = f"No such element: Unable to locate element: {element}"
@@ -711,18 +735,9 @@ class Browser:
 
     def finds(self, element):
         context = self._driver_instance
-        try:
-            if element.ctx is not None:
-                context = self.find(element.ctx)
-        except NoSuchElementException as e:
-            e.msg = f"No such element: Unable to locate element: {element}"
-            raise
+        if element.ctx is not None:
+            context = self.find(element.ctx)
 
-        if element.by == 'xpath':
-            if element.val.startswith('/'):
-                return context.find_elements('xpath', f".{element.val}")
-            else:
-                return context.find_elements('xpath', f".//{element.val}")
         return context.find_elements(*element.locator())
 
 
