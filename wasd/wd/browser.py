@@ -1,4 +1,5 @@
 import time
+import re
 from urllib.parse import urljoin, urlparse
 from contextlib import contextmanager
 from hamcrest import *
@@ -662,6 +663,44 @@ class Browser:
         """
         log_step("Delete all cookies")
         self._driver_instance.delete_all_cookies()
+
+
+    def element_has_attribute(self, element, attr, expected_value = None):
+        """
+        Проверяет наличие атрибута у элемента.
+        Опционально приинимает значение атрибута.
+
+        Args:
+            element         (Element): Элемент
+            attr            (str): Имя атрибута
+            expected_value  (string, optional): Ожидаемое значание
+
+        Returns:
+            bool
+
+        Examples:
+            ``<div class='foo bar bazqux'> </div>``
+
+            >>> browser.element_has_attribute( Element('div'), 'class' )
+            True
+            >>> browser.element_has_attribute( Element('div'), 'class', 'foo' )
+            True
+            >>> browser.element_has_attribute( Element('div'), 'class', 'baz' )
+            False
+        """
+        log_step(f"Element {element} has attribute {attr}: {expected_value}")
+        actual_val = self.grab_attribute_from(element, attr)
+
+        if actual_val is None:
+            return False
+        elif expected_value is None:
+            return True
+        else:
+            values_list = re.sub(r'\s+', ' ', actual_val).strip().split(' ')
+            if expected_value in values_list:
+                return True
+            else:
+                return False
 
 
     def execute_js(self, script, *args):
