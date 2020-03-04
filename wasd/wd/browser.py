@@ -313,7 +313,7 @@ class Browser:
             >>> browser.see_text("Администрирование")
             >>> browser.see_text("Выйти", Element("h1"))
         """
-        log_step(f"See text in {element}")
+        log_step(f"See text {text} in {element}")
         self._enable_implicit_wait()
         text_from_page = self.grab_visible_text(element)
         self._disable_implicit_wait()
