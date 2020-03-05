@@ -1,0 +1,34 @@
+from invoke import Collection, task
+
+@task
+def selenoid_up(c):
+    selenod='''docker run -d --rm               \
+--name selenoid                                 \
+-p 4444:4444                                    \
+-v /var/run/docker.sock:/var/run/docker.sock    \
+-v `pwd`/config/:/etc/selenoid/:ro              \
+-v `pwd`/video/:/opt/selenoid/video/            \
+-e OVERRIDE_VIDEO_OUTPUT_DIR=`pwd`/video/       \
+-e TZ=Asia/Novosibirsk                          \
+aerokube/selenoid:latest-release -limit 10'''
+    c.run(selenod)
+
+
+    selenod_ui='''docker run -d --rm    \
+--name selenoid-ui                      \
+--link selenoid                         \
+-p 8080:8080                            \
+aerokube/selenoid-ui --selenoid-uri=http://selenoid:4444'''
+    c.run(selenod_ui)
+
+
+@task
+def selenoid_down(c):
+    c.run('docker stop selenoid')
+    c.run('docker stop selenoid-ui')
+
+ns = Collection()
+selenoid = Collection('selenoid')
+selenoid.add_task(selenoid_up, 'up')
+selenoid.add_task(selenoid_down, 'down')
+ns.add_collection(selenoid)

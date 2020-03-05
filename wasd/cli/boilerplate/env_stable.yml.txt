@@ -1,0 +1,19 @@
+# web driver
+url: 'http://stable.example.com'
+implicit_timeout: 5
+window_size: 'maximize'
+
+# any data
+username: 'admin'
+password: 'admin'
+
+# caps
+capabilities:
+    browserName: 'chrome'
+    unexpectedAlertBehaviour: 'accept'
+    enableVNC: True
+    screenResolution: '1920x1080x24'
+    loggingPrefs:
+        browser: 'INFO'
+    chromeOptions:
+        args: ['--disable-infobars']

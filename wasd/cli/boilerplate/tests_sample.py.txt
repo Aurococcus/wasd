@@ -1,0 +1,13 @@
+import pytest
+from wasd.wd import Element as E
+
+
+class TestSomething:
+
+    @pytest.mark.want_to('Test bla bla feature')
+    def test_feature1(self, browser):
+        browser.open_url('https://google.com')
+        browser.fill_field( E("[name = 'q']"), 'Hello, World!' )
+        browser.wait_for_element_visible( E("[name = 'btnK']") )
+        browser.click( E("[name = 'btnK']") )
+        browser.sleep(5)

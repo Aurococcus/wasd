@@ -1,0 +1,5 @@
+[pytest]
+addopts = -sv --color=yes
+log_cli_level = INFO
+markers =
+    want_to
