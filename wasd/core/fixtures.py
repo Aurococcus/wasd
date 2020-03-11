@@ -3,17 +3,21 @@ from wasd.core import SettingsManager
 from wasd.core import session
 from termcolor import colored, cprint
 from wasd.common.logger import __fake_logger
+from wasd.wd import Browser
+import uuid
 
 
 def pytest_addoption(parser):
     parser.addoption("--env", action="store")
     parser.addoption("--listener", action="store_const", const=False)
+    parser.addoption("--save-screenshot", action="store_const", const=False)
 
 
 @pytest.fixture(scope='session', autouse=True)
 def init_settings_fixture(request):
     session.env = request.config.getoption("--env")
     session.use_listener = True if request.config.getoption("--listener") is not None else False
+    session.save_screenshot = True if request.config.getoption("--save-screenshot") is not None else False
     SettingsManager.init(session.env)
 
 
@@ -40,3 +44,35 @@ def pytest_collection_modifyitems(config, items):
         pretty_id += colored(func_id, 'white', attrs=['bold'])
 
         item.pretty_id = pretty_id
+
+
+@pytest.fixture(scope='function')
+def browser(request, _browser):
+    yield _browser
+
+
+@pytest.fixture(scope='function', autouse=True)
+def set_driver_to_test(request, browser):
+    request.node.obj.__func__.browser = browser
+
+
+@pytest.mark.hookwrapper
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+
+    if report.failed:
+        test_func = item.obj
+        if hasattr(test_func, 'browser'):
+            item.screenshot_path, item.screenshot_binary = take_screenshot(test_func.browser._driver_instance, item)
+
+
+def take_screenshot(driver, item):
+    id_ = f"{item.location[2]}__{uuid.uuid4()}.png"
+    screenshot_path = str(session.output_dir.joinpath(id_))
+
+    if session.save_screenshot:
+        driver.get_screenshot_as_file(screenshot_path)
+
+    screenshot_binary = driver.get_screenshot_as_png()
+    return (screenshot_path, screenshot_binary)

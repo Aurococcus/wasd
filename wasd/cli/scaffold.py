@@ -25,6 +25,7 @@ def main():
     test_dir = new_dir.joinpath('tests')
     os.mkdir(new_dir)
     os.mkdir(test_dir)
+    os.mkdir(new_dir.joinpath('_output'))
     
 
     this_directory = Path(__file__).parent.absolute()
