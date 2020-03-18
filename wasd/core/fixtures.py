@@ -1,8 +1,8 @@
 import pytest
 from wasd.core import SettingsManager
 from wasd.core import session
-from termcolor import colored, cprint
-from wasd.common.logger import __fake_logger
+from termcolor import colored
+from wasd.common.logger import LOGGER, __fake_logger
 from wasd.wd import Browser
 import uuid
 
@@ -65,6 +65,7 @@ def pytest_runtest_makereport(item, call):
         test_func = item.obj
         if hasattr(test_func, 'browser'):
             item.screenshot_path, item.screenshot_binary = take_screenshot(test_func.browser._driver_instance, item)
+            __fake_logger.log(61, colored(f'⏺ Screenshot saved to: {item.screenshot_path}', 'green'))
 
 
 def take_screenshot(driver, item):
