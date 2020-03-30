@@ -23,8 +23,10 @@ def main():
         raise Exception(f'Directory "{new_dir}" already exists')
 
     test_dir = new_dir.joinpath('tests')
+    output_dir = new_dir.joinpath('_output')
     os.mkdir(new_dir)
     os.mkdir(test_dir)
+    os.mkdir(output_dir)
     
 
     this_directory = Path(__file__).parent.absolute()

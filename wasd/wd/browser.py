@@ -1,5 +1,7 @@
 import time
 import re
+import os
+import uuid
 from urllib.parse import urljoin, urlparse
 from contextlib import contextmanager
 from hamcrest import *
@@ -313,7 +315,7 @@ class Browser:
             >>> browser.see_text("Администрирование")
             >>> browser.see_text("Выйти", Element("h1"))
         """
-        log_step(f"See text in {element}")
+        log_step(f"See text {text} in {element}")
         self._enable_implicit_wait()
         text_from_page = self.grab_visible_text(element)
         self._disable_implicit_wait()
@@ -507,6 +509,40 @@ class Browser:
         log_step(f"Grab multiple {elements}")
         els = self._match(elements)
         return list(map(lambda el: el.text, els))
+
+
+    def save_screenshot(self, name=None):
+        """
+        Делает скриншот видимой части страницы и сохраняет в ``_output/debug``.
+
+        Args:
+            name (str, optional): Имя файла
+
+        Returns:
+            pathlib.Path: Путь до файла
+        """
+        debug_dir = session.output_dir.joinpath('debug')
+        if not os.path.exists(debug_dir):
+            os.mkdir(debug_dir)
+
+        if name is None:
+            name = uuid.uuid4()
+
+        file_path = debug_dir.joinpath(f"{name}.png")
+        log_step(f"Save screenshot to {file_path}")
+        self._driver_instance.get_screenshot_as_file( str(file_path) )
+        return file_path
+
+
+    def get_screenshot_binary(self):
+        """
+        Возвращает скриншот в бинарном формате.
+
+        Returns:
+            bytes
+        """
+        log_step(f"Get screenshot as png")
+        return self._driver_instance.get_screenshot_as_png()
 
 
     def move_mouse_over(self, element):
