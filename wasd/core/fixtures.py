@@ -65,7 +65,6 @@ def pytest_runtest_makereport(item, call):
         test_func = item.obj
         if hasattr(test_func, 'browser'):
             item.screenshot_path, item.screenshot_binary = take_screenshot(test_func.browser._driver_instance, item)
-            __fake_logger.log(61, colored(f'⏺ Screenshot saved to: {item.screenshot_path}', 'green'))
 
 
 def take_screenshot(driver, item):
@@ -74,6 +73,7 @@ def take_screenshot(driver, item):
 
     if session.save_screenshot:
         driver.get_screenshot_as_file(screenshot_path)
+        __fake_logger.log(61, colored(f'⏺ Screenshot saved to: {item.screenshot_path}', 'green'))
 
     screenshot_binary = driver.get_screenshot_as_png()
     return (screenshot_path, screenshot_binary)
