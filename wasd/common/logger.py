@@ -9,7 +9,7 @@ from termcolor import colored, cprint
 STEP = 60
 
 formatter = colorlog.ColoredFormatter(
-    "%(log_color)s[%(levelname)8s] %(message)s",
+    "%(log_color)s[%(levelname).1s] %(message)s",
     datefmt=None,
     reset=True,
     log_colors={
