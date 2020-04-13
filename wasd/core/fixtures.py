@@ -1,10 +1,12 @@
 import pytest
+from pathlib import Path
 from wasd.core import SettingsManager
 from wasd.core import session
 from termcolor import colored
 from wasd.common.logger import LOGGER, __fake_logger
 from wasd.wd import Browser
 import uuid
+import os
 
 
 def pytest_addoption(parser):
@@ -72,8 +74,10 @@ def take_screenshot(driver, item):
     screenshot_path = str(session.output_dir.joinpath(id_))
 
     if session.save_screenshot:
+        if not os.path.exists(session.output_dir):
+            os.mkdir(session.output_dir)
         driver.get_screenshot_as_file(screenshot_path)
-        __fake_logger.log(61, colored(f'⏺ Screenshot saved to: {item.screenshot_path}', 'green'))
+        __fake_logger.log(61, colored(f'◉ Screenshot saved to: {screenshot_path}', 'green'))
 
     screenshot_binary = driver.get_screenshot_as_png()
     return (screenshot_path, screenshot_binary)
