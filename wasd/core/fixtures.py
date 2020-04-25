@@ -25,6 +25,10 @@ def init_settings_fixture(request):
     SettingsManager.init(session.env)
 
 
+def pytest_runtest_logfinish(nodeid, location):
+    print()
+
+
 @pytest.hookimpl(tryfirst=True)
 def pytest_runtest_setup(item):
     __fake_logger.log(61, "\n" + item.pretty_id)
