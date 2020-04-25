@@ -5,26 +5,25 @@ from termcolor import cprint
 
 
 def show_usage():
-    print('Type "wasd scaffold" for generate default config, '
-          'directory stucture and sample test.')
+    print('Type "wasd scaffold" for generate project stucture at current directory')
     print('* (Use "pytest" for running tests) *\n')
 
 
 def main():
     num_args = len(sys.argv)
-    if num_args <= 2 or num_args > 3:
+
+    if num_args != 2 or sys.argv[1] != 'scaffold':
         show_usage()
         return
 
-    dir_name = sys.argv[-1]
+    proj_dir = Path.cwd()
 
-    new_dir = Path(os.getcwd(), dir_name)
-    if os.path.exists(new_dir):
-        raise Exception(f'Directory "{new_dir}" already exists')
+    if os.path.exists(proj_dir.joinpath('_wasd_settings.yml')):
+        cprint(f'Project under "{proj_dir}" already exists', 'red')
+        return
 
-    test_dir = new_dir.joinpath('tests')
-    output_dir = new_dir.joinpath('_output')
-    os.mkdir(new_dir)
+    test_dir = proj_dir.joinpath('tests')
+    output_dir = proj_dir.joinpath('_output')
     os.mkdir(test_dir)
     os.mkdir(output_dir)
     
@@ -37,7 +36,7 @@ def main():
         ('tests_conftest.py.txt',   ['tests', 'conftest.py']),
         ('tests_sample.py.txt',     ['tests', 'test_something.py']),
         ('env_stable.yml.txt',      ['_env', 'stable.yml']),
-        ('_settings.yml.txt',   ['_settings.yml']),
+        ('_wasd_settings.yml.txt',   ['_wasd_settings.yml']),
         ('base_page.py.txt',    ['page', 'base_page.py']),
         ('home_page.py.txt',    ['page', 'home_page.py']),
         ('requirements.txt',    ['requirements.txt']),
@@ -49,7 +48,7 @@ def main():
 
     for source, dist in files_to_create:
         source_path = this_directory.joinpath('boilerplate', source)
-        dist_path = new_dir.joinpath(*dist)
+        dist_path = proj_dir.joinpath(*dist)
         dist_path.parent.mkdir(parents=True, exist_ok=True)
 
         with open(source_path, 'r') as sf:
