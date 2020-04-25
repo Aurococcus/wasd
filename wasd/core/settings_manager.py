@@ -7,7 +7,7 @@ from wasd.common import LOGGER
 
 class SettingsManager:
 
-    _default_config_file = session.root_dir.joinpath('_settings.yml')
+    _default_config_file = session.root_dir.joinpath('_wasd_settings.yml')
 
     _default_config = {
         'protocol': 'http',

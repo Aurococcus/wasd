@@ -18,7 +18,7 @@ def main():
 
     proj_dir = Path.cwd()
 
-    if os.path.exists(proj_dir.joinpath('_settings.yml')):
+    if os.path.exists(proj_dir.joinpath('_wasd_settings.yml')):
         cprint(f'Project under "{proj_dir}" already exists', 'red')
         return
 
@@ -36,7 +36,7 @@ def main():
         ('tests_conftest.py.txt',   ['tests', 'conftest.py']),
         ('tests_sample.py.txt',     ['tests', 'test_something.py']),
         ('env_stable.yml.txt',      ['_env', 'stable.yml']),
-        ('_settings.yml.txt',   ['_settings.yml']),
+        ('_wasd_settings.yml.txt',   ['_wasd_settings.yml']),
         ('base_page.py.txt',    ['page', 'base_page.py']),
         ('home_page.py.txt',    ['page', 'home_page.py']),
         ('requirements.txt',    ['requirements.txt']),
