@@ -12,7 +12,7 @@ def show_usage():
 def main():
     num_args = len(sys.argv)
 
-    if num_args != 2:
+    if num_args != 2 or sys.argv[1] != 'scaffold':
         show_usage()
         return
 
