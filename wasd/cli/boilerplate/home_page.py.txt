@@ -21,4 +21,4 @@ class HomePage(BasePage):
 
     def validate(self):
         b = self.browser
-        b.wait_for_element_not_visible(self.login_form, 5)
+        b.wait_for_element_visible(self.login_form, 5)

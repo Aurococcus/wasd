@@ -8,8 +8,8 @@ class MyExtendedBrowser(Browser):
         print('Hello, World!')
 
 
-@pytest.fixture(scope='class')
-def browser():
-   browser = MyExtendedBrowser()
-   yield browser
-   browser.close_driver()
+@pytest.fixture(scope='session')
+def _browser():
+    browser = MyExtendedBrowser()
+    yield browser
+    browser.close_driver()

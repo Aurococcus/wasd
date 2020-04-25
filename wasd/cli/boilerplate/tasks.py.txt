@@ -2,7 +2,7 @@ from invoke import Collection, task
 
 @task
 def selenoid_up(c):
-    selenod='''docker run -d --rm               \
+    selenoid='''docker run -d --rm               \
 --name selenoid                                 \
 -p 4444:4444                                    \
 -v /var/run/docker.sock:/var/run/docker.sock    \
@@ -11,15 +11,15 @@ def selenoid_up(c):
 -e OVERRIDE_VIDEO_OUTPUT_DIR=`pwd`/video/       \
 -e TZ=Asia/Novosibirsk                          \
 aerokube/selenoid:latest-release -limit 10'''
-    c.run(selenod)
+    c.run(selenoid)
 
 
-    selenod_ui='''docker run -d --rm    \
+    selenoid_ui='''docker run -d --rm    \
 --name selenoid-ui                      \
 --link selenoid                         \
 -p 8080:8080                            \
 aerokube/selenoid-ui --selenoid-uri=http://selenoid:4444'''
-    c.run(selenod_ui)
+    c.run(selenoid_ui)
 
 
 @task
