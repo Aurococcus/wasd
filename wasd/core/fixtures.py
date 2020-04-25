@@ -13,6 +13,7 @@ def pytest_addoption(parser):
     parser.addoption("--env", action="store")
     parser.addoption("--listener", action="store_const", const=False)
     parser.addoption("--save-screenshot", action="store_const", const=False)
+    parser.addoption("--steps", action="store_const", const=False)
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -20,13 +21,15 @@ def init_settings_fixture(request):
     session.env = request.config.getoption("--env")
     session.use_listener = True if request.config.getoption("--listener") is not None else False
     session.save_screenshot = True if request.config.getoption("--save-screenshot") is not None else False
+    session.steps = True if request.config.getoption("--steps") is not None else False
     SettingsManager.init(session.env)
 
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_runtest_setup(item):
     __fake_logger.log(61, "\n" + item.pretty_id)
-    __fake_logger.log(61, colored('Scenario --', 'yellow'))
+    if session.steps:
+        __fake_logger.log(61, colored('Scenario --', 'yellow'))
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -81,3 +84,4 @@ def take_screenshot(driver, item):
 
     screenshot_binary = driver.get_screenshot_as_png()
     return (screenshot_path, screenshot_binary)
+

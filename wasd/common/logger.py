@@ -4,6 +4,7 @@ import shutil
 from contextlib import contextmanager
 import inspect
 from termcolor import colored, cprint
+from wasd.core import session
 
 
 STEP = 60
@@ -70,6 +71,8 @@ __p_lvl = 0
 
 
 def log_step(message, indent=0, limit=None):
+    if not session.steps:
+        return
     global __c_frame, __p_frame, __c_lvl, __p_lvl
 
     lvl = 0

@@ -10,3 +10,4 @@ output_dir = root_dir.joinpath('_output')
 env = None
 use_listener = None
 save_screenshot = None
+steps = None
