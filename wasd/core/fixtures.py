@@ -22,6 +22,10 @@ else:
         parser.addoption("--save-screenshot", action="store_const", const=False)
         parser.addoption("--steps", action="store_const", const=False)
 
+    
+    def pytest_configure(config):
+        config.addinivalue_line("markers", "want_to(arg): hello world.")
+
 
     @pytest.fixture(scope='session', autouse=True)
     def init_settings_fixture(request):
