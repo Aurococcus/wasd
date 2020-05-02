@@ -70,3 +70,9 @@ class Element:
 
     def __str__(self):
         return "({0} = '{1}', ctx = '{2}')".format(self.by, self.val, self.ctx)
+
+
+class ShadowElement(Element):
+
+    def __str__(self):
+        return "(ShadowRoot::{0} = '{1}', ctx = '{2}')".format(self.by, self.val, self.ctx)
