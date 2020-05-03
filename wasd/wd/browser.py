@@ -13,7 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from wasd.core import SettingsManager
-from wasd.wd.element import Element
+from wasd.wd.element import Element, ShadowElement
 from wasd.common import log_step
 from wasd.wd.listener import ElementHighlightListener
 from selenium.webdriver.support.events import EventFiringWebDriver
@@ -802,7 +802,11 @@ class Browser:
             if element.ctx is not None:
                 context = self.find(element.ctx)
 
-            return context.find_element(*element.locator())
+            if isinstance(element, ShadowElement):
+                el = context.find_element(*element.locator())
+                return self.execute_js('return arguments[0].shadowRoot;', el)
+            else:
+                return context.find_element(*element.locator())
         except NoSuchElementException as e:
             e.msg = f"No such element: Unable to locate element: {element}"
             raise
