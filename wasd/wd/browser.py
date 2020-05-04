@@ -406,6 +406,25 @@ class Browser:
         self._match_first_or_fail(element).click()
 
 
+    def js_click(self, element):
+        """
+        Click via JS
+
+        Args:
+            element (Element)
+        """
+        log_step(f"Click via JS {element}")
+        script = "var rect = arguments[0].getBoundingClientRect();" \
+                 "arguments[0].dispatchEvent(new MouseEvent('click', {" \
+                 "  'bubbles': true," \
+                 "  'cancelable': true," \
+                 "  'view': window," \
+                 "  'clientX': rect.left + rect.width/2," \
+                 "  'clientY': rect.top + rect.height/2" \
+                 "}));"
+        self.execute_js(script, self._match_first_or_fail(element))
+
+
     def grab_visible(self, element):
         """
         Получает видимые элементы.
