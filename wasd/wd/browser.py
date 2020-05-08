@@ -12,12 +12,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.remote.file_detector import LocalFileDetector
 from wasd.core import SettingsManager
 from wasd.wd.element import Element, ShadowElement
 from wasd.common import log_step
 from wasd.wd.listener import ElementHighlightListener
 from selenium.webdriver.support.events import EventFiringWebDriver
 from wasd.core import session
+from pathlib import Path
 
 
 
@@ -63,6 +65,17 @@ class Browser:
         if self._driver_instance:
             self._driver_instance.quit()
             self._driver_instance = None
+
+
+    def attach_file(self, element, file_name):
+        log_step(f"Attach file {file_name}")
+        file_path = session.data_dir.joinpath(file_name)
+
+        if not Path.exists(file_path):
+            raise IOError(f"File does not exist: {file_path}")
+
+        self._driver_instance.file_detector = LocalFileDetector()
+        self.fill_field(element, file_path)
 
 
     def open(self, path):
@@ -459,6 +472,11 @@ class Browser:
         el = self._match_first_or_fail(element)
         return el.text
 
+    
+    def js_grab_text_from(self, element):
+        log_step(f"Grab text via JS from {element}")
+        return self.execute_js("return arguments[0].textContent;", self._match_first_or_fail(element))
+
 
     def grab_attribute_from(self, element, attribute):
         """
@@ -528,6 +546,12 @@ class Browser:
         log_step(f"Grab multiple {elements}")
         els = self._match(elements)
         return list(map(lambda el: el.text, els))
+
+
+    def js_grab_multiple(self, element):
+        log_step(f"Grab multiple via JS from {element}")
+        script = "return Object.values(arguments).map(function(e) { return e.textContent.trim(); });"
+        return self.execute_js(script, *self._match(element))
 
 
     def save_screenshot(self, name=None):
