@@ -26,6 +26,7 @@ def main():
     output_dir = proj_dir.joinpath('_output')
     os.mkdir(test_dir)
     os.mkdir(output_dir)
+    os.mkdir(proj_dir.joinpath('_data'))
     
 
     this_directory = Path(__file__).parent.absolute()
