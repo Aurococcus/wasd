@@ -87,7 +87,7 @@ else:
         outcome = yield
         report = outcome.get_result()
 
-        if report.failed:
+        if report.when == 'call' and report.failed:
             test_func = _get_test_func(item.obj)
             if hasattr(test_func, 'browser'):
                 driver = test_func.browser._driver_instance
