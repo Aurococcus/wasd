@@ -73,7 +73,13 @@ else:
 
     @pytest.fixture(scope='function', autouse=True)
     def set_driver_to_test(request, browser):
-        request.node.obj.__func__.browser = browser
+        _get_test_func(request.node.obj).browser = browser
+
+    
+    def _get_test_func(obj):
+        if hasattr(obj, '__func__'):
+            return obj.__func__
+        return obj
 
 
     @pytest.mark.hookwrapper
@@ -82,9 +88,12 @@ else:
         report = outcome.get_result()
 
         if report.failed:
-            test_func = item.obj
+            test_func = _get_test_func(item.obj)
             if hasattr(test_func, 'browser'):
-                item.screenshot_path, item.screenshot_binary = take_screenshot(test_func.browser._driver_instance, item)
+                driver = test_func.browser._driver_instance
+                if driver is None: # If driver was closed
+                    return
+                item.screenshot_path, item.screenshot_binary = take_screenshot(driver, item)
 
 
     def take_screenshot(driver, item):
