@@ -455,12 +455,13 @@ class Browser:
         return self._match_visible(element)
 
 
-    def grab_text_from(self, element):
+    def grab_text_from(self, element=None):
         """
-        Получает текст элемента.
+        Получает текст из переданного элемента
+        или из body, если передан None.
 
         Args:
-            element (Element): Элемент
+            element (Element, optional): Элемент
 
         Returns:
             str: Текст
@@ -468,7 +469,10 @@ class Browser:
         Examples:
             >>> browser.grab_text_from(Element("h1"))
         """
-        log_step(f"Grab text from {element}")
+        log_step(f"Get text from {element}")
+        if element is None:
+            element = Element("body")
+
         el = self._match_first_or_fail(element)
         return el.text
 
