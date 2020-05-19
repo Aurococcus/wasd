@@ -75,7 +75,7 @@ class Browser:
             raise IOError(f"File does not exist: {file_path}")
 
         self._driver_instance.file_detector = LocalFileDetector()
-        self.fill_field(element, file_path)
+        self.fill_field(element, str(file_path))
 
 
     def open(self, path):

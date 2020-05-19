@@ -1,8 +1,6 @@
 from wasd.core import SettingsManager
 import time
 from selenium.webdriver.support.events import AbstractEventListener
-from wasd.common.logger import LOGGER
-
 
 
 class ElementHighlightListener(AbstractEventListener):
