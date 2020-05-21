@@ -52,15 +52,15 @@ __fake_logger.addHandler(__fake_handler)
 __fake_logger.setLevel(logging.DEBUG)
 
 
-def __log_substep(message, indent=4, limit=None):
+def __log_substep(message, limit=None):
     global __fake_logger
-    text = colored(_prep_msg(message, indent, limit), 'cyan')
+    text = colored(_prep_msg(message, 4, limit), 'cyan')
     __fake_logger.log(61, text)
 
 
-def __log_step(message, indent=2, limit=None):
+def __log_step(message, limit=None):
     global __fake_logger
-    text = colored(_prep_msg(message, indent, limit), 'green', attrs=['bold'])
+    text = colored(_prep_msg(message, 2, limit), 'green', attrs=['bold'])
     __fake_logger.log(61, text)
 
 
@@ -70,7 +70,7 @@ __c_lvl = 0
 __p_lvl = 0
 
 
-def log_step(message, indent=0, limit=None):
+def log_step(message, limit=None):
     if not session.steps:
         return
     global __c_frame, __p_frame, __c_lvl, __p_lvl
@@ -85,7 +85,7 @@ def log_step(message, indent=0, limit=None):
     if lvl == 1:
         __log_step(message)
     else:
-        human_str = ' '.join([ i.capitalize() for i in inspect.stack()[lvl].function.split('_') ])
+        human_str = ' '.join([ i.capitalize() for i in inspect.stack()[lvl].function.strip('_').split('_') ])
         frame = inspect.stack()[lvl].frame
         args, _, _, values = inspect.getargvalues(frame)
         argspec = ', '.join([ f"'{values[i]}'" for i in args[1:] ])

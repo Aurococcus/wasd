@@ -22,7 +22,6 @@ from wasd.core import session
 from pathlib import Path
 
 
-
 class Browser:
 
     def __init__(self):
@@ -626,6 +625,24 @@ class Browser:
         else:
             self._driver_instance.switch_to.parent_frame()
 
+    
+    @contextmanager
+    def in_frame(self, frame, exit_to='parent'):
+        log_step(f"In frame {frame}")
+
+        if exit_to not in ['parent', 'default']:
+            raise TypeError(f"'exit_to' must be 'parent' or 'default', '{exit_to}' given")
+
+        switch = {
+            'parent': self._driver_instance.switch_to.parent_frame,
+            'default': self._driver_instance.switch_to.default_content
+        }
+        try:
+            self.switch_to_iframe(frame)
+            yield
+        finally:
+            switch[exit_to]()
+
 
     def save_session_snapshot(self, name):
         """
@@ -649,6 +666,15 @@ class Browser:
         """
         log_step(f"Save session snapshot '{name}'")
         self._session_snapshots[name] = self._driver_instance.get_cookies()
+
+
+    def set_style(self, element, style, value, is_important=True):
+        log_step(f"Set style {style}={value} on {element}")
+        if is_important:
+            script = f"arguments[0].style.setProperty('{style}', '{value}', 'important')"
+        else:
+            script = f"arguments[0].style.setProperty('{style}', '{value}')"
+        self.execute_js(script, self._match_first_or_fail(element))
 
 
     def load_session_snapshot(self, name):
