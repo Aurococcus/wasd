@@ -791,6 +791,22 @@ class Browser:
         log_step("Delete all cookies")
         self.get_driver().delete_all_cookies()
 
+    def dont_see_element(self, element, attributes={}):
+        """
+        Проверяет, что элемент невидим.
+
+        Args:
+            element     (Element): Элемент
+            attributes  (dict, optional): Атрибуты
+
+        Raises:
+            AssertionError
+        """
+        log_step(f"Dont see element {element}, {attributes}")
+        els = self._match_visible(element)
+        els = self._filter_by_attributes(els, attributes)
+        assert_that(els, is_(empty()))
+
     def element_has_attribute(self, element, attr, expected_value=None):
         """
         Проверяет наличие атрибута у элемента.
