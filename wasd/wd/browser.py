@@ -13,11 +13,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.file_detector import LocalFileDetector
+from selenium.webdriver.support.events import EventFiringWebDriver
 from wasd.core import SettingsManager
 from wasd.wd.element import Element, ShadowElement
 from wasd.common import log_step
 from wasd.wd.listener import ElementHighlightListener
-from selenium.webdriver.support.events import EventFiringWebDriver
 from wasd.core import session
 from pathlib import Path
 
@@ -27,8 +27,8 @@ class Browser:
     def __init__(self):
         self.new_driver()
 
-    _driver_instance    = None
-    _session_snapshots  = {}
+    _driver_instance = None
+    _session_snapshots = {}
 
     def new_driver(self):
         command_executor = "{0}://{1}:{2}{3}".format(
@@ -37,7 +37,7 @@ class Browser:
             SettingsManager.get('port'),
             SettingsManager.get('path')
         )
-        
+
         remote_driver = webdriver.Remote(
             command_executor=command_executor,
             desired_capabilities=SettingsManager.get('capabilities')
@@ -53,18 +53,15 @@ class Browser:
 
         return self._driver_instance
 
-
     def get_driver(self):
         if not self._driver_instance:
             self.new_driver()
         return self._driver_instance
 
-
     def close_driver(self):
         if self._driver_instance:
             self._driver_instance.quit()
             self._driver_instance = None
-
 
     def attach_file(self, element, file_name):
         log_step(f"Attach file {file_name}")
@@ -73,9 +70,8 @@ class Browser:
         if not Path.exists(file_path):
             raise IOError(f"File does not exist: {file_path}")
 
-        self._driver_instance.file_detector = LocalFileDetector()
+        self.get_driver().file_detector = LocalFileDetector()
         self.fill_field(element, str(file_path))
-
 
     def open(self, path):
         """
@@ -93,8 +89,7 @@ class Browser:
         """
         url = urljoin(SettingsManager.get('url'), path)
         log_step(f"Open {url}")
-        self._driver_instance.get(url)
-
+        self.get_driver().get(url)
 
     def open_url(self, url):
         """
@@ -107,16 +102,14 @@ class Browser:
             >>> browser.open_url("https://google.com")
         """
         log_step(f"Open URL {url}")
-        self._driver_instance.get(url)
-
+        self.get_driver().get(url)
 
     def refresh(self):
         """
         Обновляет страницу
         """
         log_step("Refresh page")
-        self._driver_instance.refresh()
-
+        self.get_driver().refresh()
 
     def grab_console_log(self):
         '''
@@ -127,9 +120,7 @@ class Browser:
             list[str]: список строк
         '''
         log_step("Grab browser console log")
-        return self._driver_instance.get_log('browser')
-
-
+        return self.get_driver().get_log('browser')
 
     def grab_page_html(self):
         """
@@ -139,8 +130,7 @@ class Browser:
             str: html
         """
         log_step("Grab page html")
-        return self._driver_instance.page_source
-
+        return self.get_driver().page_source
 
     def grab_html_from(self, element):
         """
@@ -152,7 +142,6 @@ class Browser:
         log_step(f"Grab html from {element}")
         el = self._match_first_or_fail(element)
         return el.get_attribute('outerHTML')
-
 
     def clear_field(self, input_element):
         """
@@ -167,7 +156,6 @@ class Browser:
         log_step(f"Clear field {input_element}")
         el = self._match_first_or_fail(input_element)
         el.clear()
-
 
     def fill_field(self, element, text):
         """
@@ -185,8 +173,7 @@ class Browser:
         el.clear()
         el.send_keys(text)
 
-
-    def fill_field_with_delay(self, element, text, delay = 0.1):
+    def fill_field_with_delay(self, element, text, delay=0.1):
         """
         Заполняет текстом поле ввода делая паузу между каждым символом.
 
@@ -203,7 +190,6 @@ class Browser:
         for ch in text:
             field.send_keys(ch)
             self.sleep(delay)
-
 
     def press_key(self, element, *chars):
         """
@@ -235,7 +221,6 @@ class Browser:
         for char in chars:
             el.send_keys(*self._convert_key_modifier(char))
 
-
     def append_field(self, element, text):
         """
         Присоединяет переданный текст к элементу.
@@ -251,8 +236,7 @@ class Browser:
         field = self._match_first_or_fail(element)
         field.send_keys(text)
 
-
-    def wait_for_element_visible(self, element, timeout = 5):
+    def wait_for_element_visible(self, element, timeout=5):
         """
         Ждёт до ``timeout`` сек. видимости элемента.
         Если элемент не появился, бросает timeout exception.
@@ -272,8 +256,7 @@ class Browser:
         condition = EC.visibility_of_element_located(element.locator())
         self.wd_wait(timeout).until(condition)
 
-
-    def wait_for_element_not_visible(self, element, timeout = 5):
+    def wait_for_element_not_visible(self, element, timeout=5):
         """
         Ждёт до ``timeout`` сек. исчезновения элемента.
         Если элемент остался видимым, бросает timeout exception.
@@ -292,8 +275,7 @@ class Browser:
         condition = EC.invisibility_of_element_located(element.locator())
         self.wd_wait(timeout).until(condition)
 
-
-    def see_element(self, element, attributes = {}):
+    def see_element(self, element, attributes={}):
         """
         Проверяет, что элемент существует и видим.
         Также можно указать атрибуты этого элемента.
@@ -313,8 +295,7 @@ class Browser:
         els = self._filter_by_attributes(els, attributes)
         assert_that(els, is_not(empty()))
 
-
-    def see_text(self, text, element = None):
+    def see_text(self, text, element=None):
         """
         Проверяет, что страница содержит текст (с учётом регистра).
         Можно передать элемент, чтобы искать текст только в нём.
@@ -333,7 +314,6 @@ class Browser:
         self._disable_implicit_wait()
         assert_that(text_from_page, contains_string(text))
 
-
     def see_in_field(self, input_element, needle):
         """
         Проверяет, что текст поля ввода равен переданному значению.
@@ -348,7 +328,6 @@ class Browser:
         log_step(f"See text '{needle}' in field {input_element}")
         val = self.grab_value_from(input_element)
         assert_that(val, equal_to(needle))
-
 
     def see_number_of_elements(self, element, expected):
         """
@@ -378,8 +357,7 @@ class Browser:
             assert_that(count, equal_to(expected),
                         f'Number of elements expected to be {expected}, but was {count}')
 
-
-    def grab_visible_text(self, element = None):
+    def grab_visible_text(self, element=None):
         """
         Получает видимый текст всей страницы или элемента.
 
@@ -400,9 +378,8 @@ class Browser:
         els = self._match(Element("body"))
         if len(els) == 0:
             return ''
-        
-        return els[0].text
 
+        return els[0].text
 
     def click(self, element):
         """
@@ -413,10 +390,9 @@ class Browser:
 
         Examples:
             >>> browser.click(Element("#logout"))
-        """ 
+        """
         log_step(f"Click {element}")
         self._match_first_or_fail(element).click()
-
 
     def js_click(self, element):
         """
@@ -436,7 +412,6 @@ class Browser:
                  "}));"
         self.execute_js(script, self._match_first_or_fail(element))
 
-
     def grab_visible(self, element):
         """
         Получает видимые элементы.
@@ -452,7 +427,6 @@ class Browser:
         """
         log_step(f"Grab visible {element}")
         return self._match_visible(element)
-
 
     def grab_text_from(self, element=None):
         """
@@ -475,11 +449,9 @@ class Browser:
         el = self._match_first_or_fail(element)
         return el.text
 
-    
     def js_grab_text_from(self, element):
         log_step(f"Grab text via JS from {element}")
         return self.execute_js("return arguments[0].textContent;", self._match_first_or_fail(element))
-
 
     def grab_attribute_from(self, element, attribute):
         """
@@ -502,7 +474,6 @@ class Browser:
         el = self._match_first_or_fail(element)
         return el.get_attribute(attribute)
 
-
     def grab_value_from(self, input_element):
         """
         Получает value атрибут из поля.
@@ -523,7 +494,6 @@ class Browser:
         log_step(f"Grab value from {input_element}")
         el = self._match_first_or_fail(input_element)
         return el.get_attribute('value')
-
 
     def grab_multiple(self, elements):
         """
@@ -550,12 +520,10 @@ class Browser:
         els = self._match(elements)
         return list(map(lambda el: el.text, els))
 
-
     def js_grab_multiple(self, element):
         log_step(f"Grab multiple via JS from {element}")
         script = "return Object.values(arguments).map(function(e) { return e.textContent.trim(); });"
         return self.execute_js(script, *self._match(element))
-
 
     def save_screenshot(self, name=None):
         """
@@ -576,9 +544,8 @@ class Browser:
 
         file_path = debug_dir.joinpath(f"{name}.png")
         log_step(f"Save screenshot to {file_path}")
-        self._driver_instance.get_screenshot_as_file( str(file_path) )
+        self.get_driver().get_screenshot_as_file(str(file_path))
         return file_path
-
 
     def get_screenshot_binary(self):
         """
@@ -588,8 +555,7 @@ class Browser:
             bytes
         """
         log_step(f"Get screenshot as png")
-        return self._driver_instance.get_screenshot_as_png()
-
+        return self.get_driver().get_screenshot_as_png()
 
     def move_mouse_over(self, element):
         """
@@ -600,10 +566,9 @@ class Browser:
         """
         log_step(f"Move mouse over {element}")
         el = self._match_first_or_fail(element)
-        ActionChains(self._driver_instance).move_to_element(el).perform()
+        ActionChains(self.get_driver()).move_to_element(el).perform()
 
-
-    def switch_to_iframe(self, frame = None):
+    def switch_to_iframe(self, frame=None):
         """
         Переключяет контекст в iframe.
         Чтобы перейти в родительский фрейм - вызывается без параметров.
@@ -621,11 +586,10 @@ class Browser:
         log_step(f"Switch to iframe {frame}")
         if frame is not None:
             el = self._match_first_or_fail(frame)
-            self._driver_instance.switch_to.frame(el)
+            self.get_driver().switch_to.frame(el)
         else:
-            self._driver_instance.switch_to.parent_frame()
+            self.get_driver().switch_to.parent_frame()
 
-    
     @contextmanager
     def in_frame(self, frame, exit_to='parent'):
         log_step(f"In frame {frame}")
@@ -634,15 +598,14 @@ class Browser:
             raise TypeError(f"'exit_to' must be 'parent' or 'default', '{exit_to}' given")
 
         switch = {
-            'parent': self._driver_instance.switch_to.parent_frame,
-            'default': self._driver_instance.switch_to.default_content
+            'parent': self.get_driver().switch_to.parent_frame,
+            'default': self.get_driver().switch_to.default_content
         }
         try:
             self.switch_to_iframe(frame)
             yield
         finally:
             switch[exit_to]()
-
 
     def save_session_snapshot(self, name):
         """
@@ -665,8 +628,7 @@ class Browser:
             >>>     browser.save_session_snapshot("login")
         """
         log_step(f"Save session snapshot '{name}'")
-        self._session_snapshots[name] = self._driver_instance.get_cookies()
-
+        self._session_snapshots[name] = self.get_driver().get_cookies()
 
     def set_style(self, element, style, value, is_important=True):
         log_step(f"Set style {style}={value} on {element}")
@@ -675,7 +637,6 @@ class Browser:
         else:
             script = f"arguments[0].style.setProperty('{style}', '{value}')"
         self.execute_js(script, self._match_first_or_fail(element))
-
 
     def load_session_snapshot(self, name):
         """
@@ -697,8 +658,7 @@ class Browser:
 
         return True
 
-
-    def set_cookie(self, name, value, params = {}):
+    def set_cookie(self, name, value, params={}):
         """
         Задаёт куку с именем и значением.
         Можно передать дополнительные параметры.
@@ -725,20 +685,19 @@ class Browser:
                 params["domain"] = url_parts["netloc"]
 
         defaults = {
-            "path"      : '/',
-            "expiry"    : int(time.time()) + 86400,
-            "secure"    : False,
-            "httpOnly"  : False,
+            "path": '/',
+            "expiry": int(time.time()) + 86400,
+            "secure": False,
+            "httpOnly": False,
         }
 
         for k, v in defaults.items():
             if k not in params:
                 params[k] = v
 
-        self._driver_instance.add_cookie(params)
+        self.get_driver().add_cookie(params)
 
-
-    def scroll_to(self, element, offset_x = 0, offset_y = 0):
+    def scroll_to(self, element, offset_x=0, offset_y=0):
         """
         Скроллит к центру переданного элемента.
         Дополнительное смещение, расчитываемое от левого верхнего угла элемента,
@@ -759,22 +718,19 @@ class Browser:
         y = el.location['y'] + offset_y
         self.execute_js(f"window.scrollTo({x}, {y})")
 
-
-    def scroll_into_view(self, element, offset_x = 0, offset_y = 0):
+    def scroll_into_view(self, element, offset_x=0, offset_y=0):
         log_step("Scroll into view")
         el = self._match_first_or_fail(element)
         self.execute_js(f"arguments[0].scrollIntoView({offset_x}, {offset_y})", el)
-
 
     def delete_all_cookies(self):
         """
         Удаляет все куки.
         """
         log_step("Delete all cookies")
-        self._driver_instance.delete_all_cookies()
+        self.get_driver().delete_all_cookies()
 
-
-    def element_has_attribute(self, element, attr, expected_value = None):
+    def element_has_attribute(self, element, attr, expected_value=None):
         """
         Проверяет наличие атрибута у элемента.
         Опционально приинимает значение атрибута.
@@ -811,7 +767,6 @@ class Browser:
             else:
                 return False
 
-
     def execute_js(self, script, *args):
         """
         Выполняет js на странице.
@@ -831,8 +786,7 @@ class Browser:
             "foo"
         """
         log_step(f"Execute JS '{script}'")
-        return self._driver_instance.execute_script(script, *args)
-
+        return self.get_driver().execute_script(script, *args)
 
     def sleep(self, secs):
         """
@@ -849,8 +803,7 @@ class Browser:
             raise Exception("Waiting for more then 1000 seconds: 16.6667 mins")
         time.sleep(secs)
 
-
-    def wd_wait(self, timeout = 10, poll_frequency = 0.5):
+    def wd_wait(self, timeout=10, poll_frequency=0.5):
         """
         Возвращает объект WebDriverWait.
 
@@ -861,16 +814,14 @@ class Browser:
         Returns:
             WebDriverWait
         """
-        return WebDriverWait(self._driver_instance, timeout, poll_frequency)
-
+        return WebDriverWait(self.get_driver(), timeout, poll_frequency)
 
     def scroll_top(self):
         log_step("Window scroll top")
         self.execute_js("window.scrollTo(0, 0)")
 
-
     def find(self, element):
-        context = self._driver_instance
+        context = self.get_driver()
         try:
             if element.ctx is not None:
                 context = self.find(element.ctx)
@@ -884,14 +835,12 @@ class Browser:
             e.msg = f"No such element: Unable to locate element: {element}"
             raise
 
-
     def finds(self, element):
-        context = self._driver_instance
+        context = self.get_driver()
         if element.ctx is not None:
             context = self.find(element.ctx)
 
         return context.find_elements(*element.locator())
-
 
     def _filter_by_attributes(self, els, attributes):
         for k, v in attributes.items():
@@ -900,14 +849,12 @@ class Browser:
                 els))
         return els
 
-
     def _match_visible(self, element):
         els = self._match(element)
         nodes = list(filter(
             lambda el: el.is_displayed(),
             els))
         return nodes
-
 
     def _match_first_or_fail(self, element):
         self._enable_implicit_wait()
@@ -917,18 +864,14 @@ class Browser:
             raise Exception("Element {0} was not found.".format(element))
         return els[0]
 
-
     def _match(self, element):
         return self.finds(element)
 
-
     def _enable_implicit_wait(self):
-        self._driver_instance.implicitly_wait( SettingsManager.get('implicit_timeout') )
-
+        self.get_driver().implicitly_wait(SettingsManager.get('implicit_timeout'))
 
     def _disable_implicit_wait(self):
-        self._driver_instance.implicitly_wait(0)
-
+        self.get_driver().implicitly_wait(0)
 
     def _convert_key_modifier(self, keys):
         if not isinstance(keys, tuple):

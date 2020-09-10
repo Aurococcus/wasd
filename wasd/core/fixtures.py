@@ -66,34 +66,34 @@ else:
             item.pretty_id = pretty_id
 
 
-    @pytest.fixture(scope='function')
-    def browser(request, _browser):
-        yield _browser
-
-
     @pytest.fixture(scope='function', autouse=True)
     def set_driver_to_test(request, browser):
         _get_test_func(request.node.obj).browser = browser
 
-    
     def _get_test_func(obj):
         if hasattr(obj, '__func__'):
             return obj.__func__
         return obj
-
 
     @pytest.mark.hookwrapper
     def pytest_runtest_makereport(item, call):
         outcome = yield
         report = outcome.get_result()
 
-        if report.when == 'call' and report.failed:
+        if report.when in ["setup", "teardown"]:
+            brwsr = item.funcargs.get("browser")
+            if brwsr:
+                driver = brwsr._driver_instance
+
+        if report.when == 'call':
             test_func = _get_test_func(item.obj)
             if hasattr(test_func, 'browser'):
                 driver = test_func.browser._driver_instance
-                if driver is None: # If driver was closed
-                    return
-                item.screenshot_path, item.screenshot_binary = take_screenshot(driver, item)
+
+        if report.failed:
+            if driver is None: # If driver was closed
+                return
+            item.screenshot_path, item.screenshot_binary = take_screenshot(driver, item)
 
 
     def take_screenshot(driver, item):
