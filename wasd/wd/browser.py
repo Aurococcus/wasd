@@ -590,6 +590,67 @@ class Browser:
         else:
             self.get_driver().switch_to.parent_frame()
 
+    def close_window(self):
+        """
+        Закрывает текущее окно и переключается в предыдущее.
+
+        Returns:
+            window handle
+        """
+        log_step("Close window")
+        prev_window = self.get_relative_window_handle(-1)
+        self.get_driver().close()
+        self.get_driver().switch_to.window(prev_window)
+        return prev_window
+
+    def switch_to_next_window(self, offset=1):
+        """
+        Переключается в следующее окно.
+
+        Args:
+            offset (int, optional): По умолчанию 1
+        
+        Returns:
+            window handle
+        """
+        log_step("Switching to next window")
+        next_window = self.get_relative_window_handle(offset)
+        self.get_driver().switch_to.window(next_window)
+        return next_window
+
+    def switch_to_prev_window(self, offset=1):
+        """
+        Переключается в предыдущее окно.
+
+        Args:
+            offset (int, optional): По умолчанию 1
+        
+        Returns:
+            window handle
+        """
+        log_step("Switching to prev window")
+        next_window = self.get_relative_window_handle(0-offset)
+        self.get_driver().switch_to.window(next_window)
+        return next_window
+
+    def new_window(self, url="about:blank"):
+        """
+        Открывает новое окно и переключается в него.
+
+        Args:
+            url (str, optional): По умолчанию 'about:blank'
+        
+        Returns:
+            window handle
+        """
+        log_step(f"Open new window with url '{url}''")
+        original_handles = self._driver_instance.window_handles
+        self.execute_js(f"window.open('{url}')")
+        new_handles = self._driver_instance.window_handles
+        new_window_hanle = (set(new_handles) - set(original_handles)).pop()
+        self._driver_instance.switch_to.window(new_window_hanle)
+        return new_window_hanle
+
     @contextmanager
     def in_frame(self, frame, exit_to='parent'):
         log_step(f"In frame {frame}")
@@ -819,6 +880,13 @@ class Browser:
     def scroll_top(self):
         log_step("Window scroll top")
         self.execute_js("window.scrollTo(0, 0)")
+
+    def get_relative_window_handle(self, offset):
+        original_handles = self._driver_instance.window_handles
+        this_window = self._driver_instance.current_window_handle
+        idx = original_handles.index(this_window)
+        next_window = original_handles[(idx+offset) % len(original_handles)]
+        return next_window
 
     def find(self, element):
         context = self.get_driver()
