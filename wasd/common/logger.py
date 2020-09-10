@@ -76,7 +76,7 @@ def log_step(message, limit=None):
     global __c_frame, __p_frame, __c_lvl, __p_lvl
 
     lvl = 0
-    while inspect.stack()[lvl].function not in ['pytest_pyfunc_call', 'call_fixture_func']:
+    while inspect.stack()[lvl].function not in ['pytest_pyfunc_call', 'call_fixture_func', '_teardown_yield_fixture']:
         lvl += 1
     lvl -= 2
     __c_lvl = inspect.stack()[lvl+1].frame.f_lineno
