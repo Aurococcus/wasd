@@ -80,6 +80,7 @@ else:
         outcome = yield
         report = outcome.get_result()
 
+        driver = None
         if report.when in ["setup", "teardown"]:
             brwsr = item.funcargs.get("browser")
             if brwsr:
