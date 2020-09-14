@@ -30,3 +30,4 @@ pip-log.txt
 # Developer
 .vscode/
 .python-version
+debug.log
