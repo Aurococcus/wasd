@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from selenium.webdriver.common.by import By
 from wasd.util.locator import Locator
+from wasd.common.exceptions import MalformedLocatorException
 
 
 # https://github.com/mfalesni/selenium-smart-locator
@@ -55,7 +56,7 @@ class Element:
                 val = args[0][1]
                 ctx = args[1]
         else:
-            raise TypeError('Wrong parameters specified for locator:', *args)
+            raise MalformedLocatorException(f"Wrong parameters specified for locator: {args}")
 
 
         self.by = self._get_by(by)
