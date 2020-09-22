@@ -2,24 +2,27 @@ import time
 import re
 import os
 import uuid
+from hamcrest import *
+from pathlib import Path
 from urllib.parse import urljoin, urlparse
 from contextlib import contextmanager
-from hamcrest import *
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.remote.file_detector import LocalFileDetector
 from selenium.webdriver.support.events import EventFiringWebDriver
-from wasd.core import SettingsManager
-from wasd.wd.element import Element, ShadowElement
-from wasd.common import log_step
-from wasd.wd.listener import ElementHighlightListener
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.remote.file_detector import LocalFileDetector
 from wasd.core import session
-from pathlib import Path
+from wasd.core import SettingsManager
+from wasd.common import log_step
+from wasd.wd.element import Element, ShadowElement
+from wasd.wd.listener import ElementHighlightListener
+
+from wasd.support.wait import Wait
+from wasd.support.expected_conditions import visibility_of, invisibility_of
 
 
 class Browser:
@@ -236,7 +239,7 @@ class Browser:
         field = self._match_first_or_fail(element)
         field.send_keys(text)
 
-    def wait_for_element_visible(self, element, timeout=5):
+    def wait_for_element_visible(self, element, timeout=5, poll_frequency=0.5):
         """
         Ждёт до ``timeout`` сек. видимости элемента.
         Если элемент не появился, бросает timeout exception.
@@ -253,10 +256,9 @@ class Browser:
 
         """
         log_step(f"Wait for element visible {element}")
-        condition = EC.visibility_of_element_located(element.locator())
-        self.wd_wait(timeout).until(condition)
+        self.wait(timeout, poll_frequency).until(visibility_of(element))
 
-    def wait_for_element_not_visible(self, element, timeout=5):
+    def wait_for_element_not_visible(self, element, timeout=5, poll_frequency=0.5):
         """
         Ждёт до ``timeout`` сек. исчезновения элемента.
         Если элемент остался видимым, бросает timeout exception.
@@ -272,8 +274,7 @@ class Browser:
             >>> browser.wait_for_element_not_visible(Element("#header", 15))
         """
         log_step(f"Wait for element not visible {element}")
-        condition = EC.invisibility_of_element_located(element.locator())
-        self.wd_wait(timeout).until(condition)
+        self.wait(timeout, poll_frequency).until(invisibility_of(element))
 
     def see_element(self, element, attributes={}):
         """
@@ -892,6 +893,12 @@ class Browser:
             WebDriverWait
         """
         return WebDriverWait(self.get_driver(), timeout, poll_frequency)
+
+    def wait(self, timeout=10, poll_frequency=0.5):
+        """
+        Возвращает объект wasd.support.wait.Wait
+        """
+        return Wait(self, timeout, poll_frequency)
 
     def scroll_top(self):
         log_step("Window scroll top")
