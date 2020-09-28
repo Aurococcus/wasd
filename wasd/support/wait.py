@@ -24,7 +24,7 @@ class Wait(object):
 
     def __repr__(self):
         return '<{0.__module__}.{0.__name__} (session="{1}")>'.format(
-            type(self), self._browser._driver_instance_.session_id)
+            type(self), self._browser._driver_instance.session_id)
 
     def until(self, method, message=''):
         screen = None
