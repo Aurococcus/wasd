@@ -2,6 +2,7 @@ import time
 import re
 import os
 import uuid
+import json
 from hamcrest import *
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
@@ -780,10 +781,10 @@ class Browser:
         y = el.location['y'] + offset_y
         self.execute_js(f"window.scrollTo({x}, {y})")
 
-    def scroll_into_view(self, element, offset_x=0, offset_y=0):
+    def scroll_into_view(self, element, scroll_into_view_options={}):
         log_step("Scroll into view")
         el = self._match_first_or_fail(element)
-        self.execute_js(f"arguments[0].scrollIntoView({offset_x}, {offset_y})", el)
+        self.execute_js(f"arguments[0].scrollIntoView({json.dumps(scroll_into_view_options)})", el)
 
     def delete_all_cookies(self):
         """
