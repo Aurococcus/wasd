@@ -786,8 +786,8 @@ class Browser:
         Скролит страницу к элементу
 
         Args:
-             element (Element): Элемент
-             scroll_into_view_options (dict, optional): Параметры, по умолчанию {'block': 'center'}
+            element (Element): Элемент
+            scroll_into_view_options (dict, optional): Параметры, по умолчанию {'block': 'center'}
                 https://developer.mozilla.org/ru/docs/Web/API/Element/scrollIntoView
         """
         log_step("Scroll into view")
