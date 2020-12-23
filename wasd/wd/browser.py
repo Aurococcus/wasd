@@ -781,7 +781,15 @@ class Browser:
         y = el.location['y'] + offset_y
         self.execute_js(f"window.scrollTo({x}, {y})")
 
-    def scroll_into_view(self, element, scroll_into_view_options={}):
+    def scroll_into_view(self, element, scroll_into_view_options={"block": "center"}):
+        """
+        Скролит страницу к элементу
+
+        Args:
+             element (Element): Элемент
+             scroll_into_view_options (dict, optional): Параметры, по умолчанию {'block': 'center'}
+                https://developer.mozilla.org/ru/docs/Web/API/Element/scrollIntoView
+        """
         log_step("Scroll into view")
         el = self._match_first_or_fail(element)
         self.execute_js(f"arguments[0].scrollIntoView({json.dumps(scroll_into_view_options)})", el)
