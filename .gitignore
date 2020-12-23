@@ -29,5 +29,6 @@ pip-log.txt
 
 # Developer
 .vscode/
+.idea/
 .python-version
 debug.log
