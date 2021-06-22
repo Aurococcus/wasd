@@ -30,7 +30,6 @@ class staleness_of(object):
 
     def __call__(self, browser):
         try:
-            el = browser._match_first_or_fail(self.element)
             # Calling any method forces a staleness check
             el.is_enabled()
             return False
