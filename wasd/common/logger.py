@@ -76,19 +76,24 @@ def log_step(message, limit=None):
     global __c_frame, __p_frame, __c_lvl, __p_lvl
 
     lvl = 0
-    while inspect.stack()[lvl].function not in ['pytest_pyfunc_call', 'call_fixture_func', '_teardown_yield_fixture']:
+    while inspect.stack()[lvl].function != "browser":
+        if inspect.stack()[lvl].function in ["pytest_pyfunc_call", "_multicall"]:
+            lvl -= 1
+            break
+
         lvl += 1
-    lvl -= 2
+
+    lvl -= 1
     __c_lvl = inspect.stack()[lvl+1].frame.f_lineno
     __c_frame = id(inspect.stack()[lvl].frame)
-    
+
     if lvl == 1:
         __log_step(message)
     else:
-        human_str = ' '.join([ i.capitalize() for i in inspect.stack()[lvl].function.strip('_').split('_') ])
+        human_str = ' '.join([i.capitalize() for i in inspect.stack()[lvl].function.strip('_').split('_')])
         frame = inspect.stack()[lvl].frame
         args, _, _, values = inspect.getargvalues(frame)
-        argspec = ', '.join([ f"'{values[i]}'" for i in args[1:] ])
+        argspec = ', '.join([f"'{values[i]}'" for i in args[1:]])
         if __c_frame != __p_frame:
             __log_step(human_str + " " + argspec)
         else:
@@ -103,7 +108,7 @@ def log_step(message, limit=None):
 
 def _prep_msg(message, indent, limit):
     term_width = shutil.get_terminal_size().columns
-    
+
     msg = message[:limit] if limit else message[:term_width * 3]
     if len(msg) < len(message):
         msg += " ..."
