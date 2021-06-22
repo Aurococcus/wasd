@@ -22,10 +22,8 @@ else:
         parser.addoption("--save-screenshot", action="store_const", const=False)
         parser.addoption("--steps", action="store_const", const=False)
 
-    
     def pytest_configure(config):
         config.addinivalue_line("markers", "want_to(arg): hello world.")
-
 
     @pytest.fixture(scope='session', autouse=True)
     def init_settings_fixture(request):
@@ -35,10 +33,8 @@ else:
         session.steps = True if request.config.getoption("--steps") is not None else False
         SettingsManager.init(session.env)
 
-
     def pytest_runtest_logfinish(nodeid, location):
         print()
-
 
     @pytest.hookimpl(tryfirst=True)
     def pytest_runtest_setup(item):
@@ -46,12 +42,11 @@ else:
         if session.steps:
             __fake_logger.log(61, colored('Scenario --', 'yellow'))
 
-
     @pytest.hookimpl(tryfirst=True)
     def pytest_collection_modifyitems(config, items):
         for item in items:
             pretty_id = colored(item.parent.parent.name + ": ", 'magenta', attrs=['bold'])
-        
+
             # Если будет несколько маркеров, то просто брать последний, не кидая ошибку
             want_to_list = list(filter(lambda m: m.name == 'want_to', item.own_markers))
             if len(want_to_list) >= 1:
@@ -64,7 +59,6 @@ else:
             pretty_id += colored(func_id, 'white', attrs=['bold'])
 
             item.pretty_id = pretty_id
-
 
     @pytest.fixture(scope='function', autouse=True)
     def set_driver_to_test(request, browser):
@@ -80,22 +74,14 @@ else:
         outcome = yield
         report = outcome.get_result()
 
-        driver = None
-        if report.when in ["setup", "teardown"]:
-            brwsr = item.funcargs.get("browser")
-            if brwsr:
-                driver = brwsr._driver_instance
+        browser = item.funcargs.get("browser")
+        if browser and isinstance(browser, Browser):
+            driver = browser._driver_instance
 
-        if report.when == 'call':
-            test_func = _get_test_func(item.obj)
-            if hasattr(test_func, 'browser'):
-                driver = test_func.browser._driver_instance
-
-        if report.failed:
-            if driver is None: # If driver was closed
-                return
-            item.screenshot_path, item.screenshot_binary = take_screenshot(driver, item)
-
+            if report.failed:
+                if driver is None:  # If driver was closed
+                    return
+                item.screenshot_path, item.screenshot_binary = take_screenshot(driver, item)
 
     def take_screenshot(driver, item):
         id_ = f"{item.location[2]}__{uuid.uuid4()}.png"
