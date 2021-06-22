@@ -538,7 +538,7 @@ class Browser:
         """
         debug_dir = session.output_dir.joinpath('debug')
         if not os.path.exists(debug_dir):
-            os.mkdir(debug_dir)
+            os.makedirs(debug_dir, exist_ok=True)
 
         if name is None:
             name = uuid.uuid4()
