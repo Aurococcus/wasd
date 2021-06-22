@@ -284,7 +284,7 @@ class Browser:
         Args:
             element (Element): Элемент
             attributes (dict, optional): Словарь атрибутов
-        
+
         Examples:
             >>> browser.see_element(Element("tr"))
             >>> browser.see_element(Element("tr"), {"some-attr": "some-value"})
@@ -322,7 +322,7 @@ class Browser:
         Args:
             input_element (Element): Элемент
             needle (str): Текст
-        
+
         Examples:
             >>> browser.see_in_field(Element("input#foo"), "Hello World!")
         """
@@ -508,11 +508,11 @@ class Browser:
 
         Examples:
             .. code-block:: html
-            
+
                 <tr> foo </tr>
                 <tr> bar </tr>
                 <tr> baz </tr>
-            
+
 
             >>> browser.grab_multiple( Element('tr') )
             ["foo", "bar", "qaz"]
@@ -610,7 +610,7 @@ class Browser:
 
         Args:
             offset (int, optional): По умолчанию 1
-        
+
         Returns:
             window handle
         """
@@ -625,7 +625,7 @@ class Browser:
 
         Args:
             offset (int, optional): По умолчанию 1
-        
+
         Returns:
             window handle
         """
@@ -640,7 +640,7 @@ class Browser:
 
         Args:
             url (str, optional): По умолчанию 'about:blank'
-        
+
         Returns:
             window handle
         """
@@ -832,18 +832,38 @@ class Browser:
             False
         """
         log_step(f"Element {element} has attribute {attr}: {expected_value}")
-        actual_val = self.grab_attribute_from(element, attr)
 
-        if actual_val is None:
+        is_attribue_presents = self.execute_js(
+            f"return arguments[0].hasAttribute('{attr}');",
+            self._match_first_or_fail(element)
+        )
+
+        if not is_attribue_presents:
             return False
-        elif expected_value is None:
+
+        if expected_value is None:
             return True
         else:
+            actual_val = self.grab_attribute_from(element, attr)
+
             values_list = re.sub(r'\s+', ' ', actual_val).strip().split(' ')
             if expected_value in values_list:
                 return True
             else:
                 return False
+
+        # actual_val = self.grab_attribute_from(element, attr)
+
+        # if actual_val is None:
+        #     return False
+        # elif expected_value is None:
+        #     return True
+        # else:
+        #     values_list = re.sub(r'\s+', ' ', actual_val).strip().split(' ')
+        #     if expected_value in values_list:
+        #         return True
+        #     else:
+        #         return False
 
     def execute_js(self, script, *args):
         """
