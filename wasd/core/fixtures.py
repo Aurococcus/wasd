@@ -60,15 +60,6 @@ else:
 
             item.pretty_id = pretty_id
 
-    @pytest.fixture(scope='function', autouse=True)
-    def set_driver_to_test(request, browser):
-        _get_test_func(request.node.obj).browser = browser
-
-    def _get_test_func(obj):
-        if hasattr(obj, '__func__'):
-            return obj.__func__
-        return obj
-
     @pytest.mark.hookwrapper
     def pytest_runtest_makereport(item, call):
         outcome = yield
@@ -77,6 +68,7 @@ else:
         browser = item.funcargs.get("browser")
         if browser and isinstance(browser, Browser):
             driver = browser._driver_instance
+            item.browser = browser
 
             if report.failed:
                 if driver is None:  # If driver was closed
