@@ -396,6 +396,19 @@ class Browser:
         log_step(f"Click {element}")
         self._match_first_or_fail(element).click()
 
+    def double_click(self, element):
+        """
+        Дважды кликает по элементу.
+
+        Args:
+            element (Element): Элемент
+
+        Examples:
+            >>> browser.double_click(Element("#logout"))
+        """
+        log_step(f"Double click {element}")
+        ActionChains(_driver_instance).double_click(element).perform()
+
     def js_click(self, element):
         """
         Click via JS
@@ -673,8 +686,8 @@ class Browser:
     def save_session_snapshot(self, name):
         """
         Сохраняет куки чтобы загрузить их в другом тесте.
-        Например, если в каждом тесте необходима авторизация, 
-        можно выполнить этот сценарий единожды, 
+        Например, если в каждом тесте необходима авторизация,
+        можно выполнить этот сценарий единожды,
         а в других тестах только восстанавливать сессию.
 
         Args:
@@ -729,7 +742,7 @@ class Browser:
         Args:
             name    (str): Имя куки
             value   (str): Значение куки
-            params  (dict, optional): 
+            params  (dict, optional):
                 Доп. параметры:
 
                     - domain
