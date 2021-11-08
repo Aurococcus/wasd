@@ -404,7 +404,7 @@ class Browser:
             element (Element): Элемент
 
         Examples:
-            >>> browser.double_click(on_element)
+            >>> browser.double_click(Element("#login"))
         """
         log_step(f"Double click {element}")
         target = self._match_first_or_fail(element)
