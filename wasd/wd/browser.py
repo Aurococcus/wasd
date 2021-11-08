@@ -404,10 +404,11 @@ class Browser:
             element (Element): Элемент
 
         Examples:
-            >>> browser.double_click(Element("#logout"))
+            >>> source = browser.find_element(Element("#loggout"))
+            >>> browser.double_click(source)
         """
         log_step(f"Double click {element}")
-        ActionChains(_driver_instance).double_click(element).perform()
+        ActionChains(_driver_instance).double_click(on_element = None).perform()
 
     def js_click(self, element):
         """

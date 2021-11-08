@@ -9,5 +9,5 @@ class TestSomething:
         browser.open_url('https://google.com')
         browser.fill_field( E("[name = 'q']"), 'Hello, World!' )
         browser.wait_for_element_visible( E("[name = 'btnK']") )
-        browser.click( E("[name = 'btnK']") )
+        browser.double_click( E("[name = 'btnK']") )
         browser.sleep(5)
