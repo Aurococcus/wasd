@@ -7,6 +7,7 @@ from wasd.common.logger import LOGGER, __fake_logger
 from wasd.wd import Browser
 import uuid
 import os
+from datetime import datetime as dt
 
 
 if not os.path.exists(Path.cwd().joinpath('_wasd_settings.yml')):
@@ -76,7 +77,8 @@ else:
                 item.screenshot_path, item.screenshot_binary = take_screenshot(driver, item)
 
     def take_screenshot(driver, item):
-        id_ = f"{item.location[2]}__{uuid.uuid4()}.png"
+        now_timestamp = dt.now().isoformat(timespec="seconds")
+        id_ = f"{item.location[2]}__{now_timestamp}.png"
         screenshot_path = str(session.output_dir.joinpath(id_))
 
         if session.save_screenshot:
