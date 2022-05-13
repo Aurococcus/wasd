@@ -29,7 +29,7 @@ if sys.argv[-1] == 'publish':
         os.system('python -m pip install twine')
 
     print("\n*** Publishing to PyPI: ***\n")
-    os.system('python -m twine upload dist/*')  # Requires ~/.pypirc Keys
+    os.system('python -m twine upload dist/* --verbose')  # Requires ~/.pypirc Keys
 
     print("\n*** Release published successfully. ***\n")
 
@@ -38,7 +38,7 @@ if sys.argv[-1] == 'publish':
 
 setup(
     name='wasd',
-    version='1.0.93',
+    version='1.0.94',
     description='The Kostyan Selenium Wrapper',
     long_description=long_description,
     long_description_content_type='text/markdown',
