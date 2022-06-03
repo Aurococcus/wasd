@@ -24,11 +24,13 @@ class Wait(object):
 
     def __repr__(self):
         return '<{0.__module__}.{0.__name__} (session="{1}")>'.format(
-            type(self), self._browser._driver_instance.session_id)
+            type(self), self._browser._driver_instance.session_id
+        )
 
-    def until(self, method, message=''):
+    def until(self, method, message=""):
         screen = None
         stacktrace = None
+        last_exc = None
 
         end_time = time.time() + self._timeout
         while True:
@@ -37,23 +39,10 @@ class Wait(object):
                 if value:
                     return value
             except self._ignored_exceptions as exc:
-                screen = getattr(exc, 'screen', None)
-                stacktrace = getattr(exc, 'stacktrace', None)
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+                last_exc = exc
             time.sleep(self._poll)
             if time.time() > end_time:
                 break
-        raise TimeoutException(message, screen, stacktrace)
-
-    def until_not(self, method, message=''):
-        end_time = time.time() + self._timeout
-        while True:
-            try:
-                value = method(self._browser)
-                if not value:
-                    return value
-            except self._ignored_exceptions:
-                return True
-            time.sleep(self._poll)
-            if time.time() > end_time:
-                break
-        raise TimeoutException(message)
+        raise TimeoutException(last_exc.msg, screen, stacktrace)

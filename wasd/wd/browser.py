@@ -27,7 +27,6 @@ from wasd.support.expected_conditions import visibility_of, invisibility_of
 
 
 class Browser:
-
     def __init__(self):
         self.new_driver()
 
@@ -36,15 +35,14 @@ class Browser:
 
     def new_driver(self):
         command_executor = "{0}://{1}:{2}{3}".format(
-            SettingsManager._config['protocol'],
-            SettingsManager.get('host'),
-            SettingsManager.get('port'),
-            SettingsManager.get('path')
+            SettingsManager._config["protocol"],
+            SettingsManager.get("host"),
+            SettingsManager.get("port"),
+            SettingsManager.get("path"),
         )
 
         remote_driver = webdriver.Remote(
-            command_executor=command_executor,
-            desired_capabilities=SettingsManager.get('capabilities')
+            command_executor=command_executor, desired_capabilities=SettingsManager.get("capabilities")
         )
 
         if session.use_listener:
@@ -52,7 +50,7 @@ class Browser:
         else:
             self._driver_instance = remote_driver
 
-        self._driver_instance.implicitly_wait(SettingsManager.get('implicit_timeout'))
+        self._driver_instance.implicitly_wait(SettingsManager.get("implicit_timeout"))
         self._driver_instance.maximize_window()
 
         return self._driver_instance
@@ -91,7 +89,7 @@ class Browser:
             >>> browser.open("/admin")
             # В админку
         """
-        url = urljoin(SettingsManager.get('url'), path)
+        url = urljoin(SettingsManager.get("url"), path)
         log_step(f"Open {url}")
         self.get_driver().get(url)
 
@@ -116,15 +114,15 @@ class Browser:
         self.get_driver().refresh()
 
     def grab_console_log(self):
-        '''
+        """
         Получить лог браузерной консоли. Буффер очищается после каждого запроса.
         Требует сapability ``loggingPrefs: { browser: 'INFO' }``.
 
         Returns:
             list[str]: список строк
-        '''
+        """
         log_step("Grab browser console log")
-        return self.get_driver().get_log('browser')
+        return self.get_driver().get_log("browser")
 
     def grab_page_html(self):
         """
@@ -145,7 +143,7 @@ class Browser:
         """
         log_step(f"Grab html from {element}")
         el = self._match_first_or_fail(element)
-        return el.get_attribute('outerHTML')
+        return el.get_attribute("outerHTML")
 
     def clear_field(self, input_element):
         """
@@ -353,11 +351,11 @@ class Browser:
         count = len(self._match_visible(element))
         if isinstance(expected, tuple):
             a, b = expected
-            assert_that(a <= count <= b, is_(True),
-                        f'Number of elements expected to be in range {expected}, but was {count}')
+            assert_that(
+                a <= count <= b, is_(True), f"Number of elements expected to be in range {expected}, but was {count}"
+            )
         else:
-            assert_that(count, equal_to(expected),
-                        f'Number of elements expected to be {expected}, but was {count}')
+            assert_that(count, equal_to(expected), f"Number of elements expected to be {expected}, but was {count}")
 
     def grab_visible_text(self, element=None):
         """
@@ -379,7 +377,7 @@ class Browser:
 
         els = self._match(Element("body"))
         if len(els) == 0:
-            return ''
+            return ""
 
         return els[0].text
 
@@ -418,14 +416,16 @@ class Browser:
             element (Element)
         """
         log_step(f"Click via JS {element}")
-        script = "var rect = arguments[0].getBoundingClientRect();" \
-                 "arguments[0].dispatchEvent(new MouseEvent('click', {" \
-                 "  'bubbles': true," \
-                 "  'cancelable': true," \
-                 "  'view': window," \
-                 "  'clientX': rect.left + rect.width/2," \
-                 "  'clientY': rect.top + rect.height/2" \
-                 "}));"
+        script = (
+            "var rect = arguments[0].getBoundingClientRect();"
+            "arguments[0].dispatchEvent(new MouseEvent('click', {"
+            "  'bubbles': true,"
+            "  'cancelable': true,"
+            "  'view': window,"
+            "  'clientX': rect.left + rect.width/2,"
+            "  'clientY': rect.top + rect.height/2"
+            "}));"
+        )
         self.execute_js(script, self._match_first_or_fail(element))
 
     def grab_visible(self, element):
@@ -509,7 +509,7 @@ class Browser:
         """
         log_step(f"Grab value from {input_element}")
         el = self._match_first_or_fail(input_element)
-        return el.get_attribute('value')
+        return el.get_attribute("value")
 
     def grab_multiple(self, elements):
         """
@@ -551,7 +551,7 @@ class Browser:
         Returns:
             pathlib.Path: Путь до файла
         """
-        debug_dir = session.output_dir.joinpath('debug')
+        debug_dir = session.output_dir.joinpath("debug")
         if not os.path.exists(debug_dir):
             os.makedirs(debug_dir, exist_ok=True)
 
@@ -645,7 +645,7 @@ class Browser:
             window handle
         """
         log_step("Switching to prev window")
-        next_window = self.get_relative_window_handle(0-offset)
+        next_window = self.get_relative_window_handle(0 - offset)
         self.get_driver().switch_to.window(next_window)
         return next_window
 
@@ -668,15 +668,15 @@ class Browser:
         return new_window_hanle
 
     @contextmanager
-    def in_frame(self, frame, exit_to='parent'):
+    def in_frame(self, frame, exit_to="parent"):
         log_step(f"In frame {frame}")
 
-        if exit_to not in ['parent', 'default']:
+        if exit_to not in ["parent", "default"]:
             raise TypeError(f"'exit_to' must be 'parent' or 'default', '{exit_to}' given")
 
         switch = {
-            'parent': self.get_driver().switch_to.parent_frame,
-            'default': self.get_driver().switch_to.default_content
+            "parent": self.get_driver().switch_to.parent_frame,
+            "default": self.get_driver().switch_to.default_content,
         }
         try:
             self.switch_to_iframe(frame)
@@ -762,7 +762,7 @@ class Browser:
                 params["domain"] = url_parts["netloc"]
 
         defaults = {
-            "path": '/',
+            "path": "/",
             "expiry": int(time.time()) + 86400,
             "secure": False,
             "httpOnly": False,
@@ -791,8 +791,8 @@ class Browser:
         """
         log_step(f"Scroll to {element}")
         el = self._match_first_or_fail(element)
-        x = el.location['x'] + offset_x
-        y = el.location['y'] + offset_y
+        x = el.location["x"] + offset_x
+        y = el.location["y"] + offset_y
         self.execute_js(f"window.scrollTo({x}, {y})")
 
     def scroll_into_view(self, element, scroll_into_view_options={"block": "center"}):
@@ -857,8 +857,7 @@ class Browser:
         log_step(f"Element {element} has attribute {attr}: {expected_value}")
 
         is_attribue_presents = self.execute_js(
-            f"return arguments[0].hasAttribute('{attr}');",
-            self._match_first_or_fail(element)
+            f"return arguments[0].hasAttribute('{attr}');", self._match_first_or_fail(element)
         )
 
         if not is_attribue_presents:
@@ -869,7 +868,7 @@ class Browser:
         else:
             actual_val = self.grab_attribute_from(element, attr)
 
-            values_list = re.sub(r'\s+', ' ', actual_val).strip().split(' ')
+            values_list = re.sub(r"\s+", " ", actual_val).strip().split(" ")
             if expected_value in values_list:
                 return True
             else:
@@ -951,7 +950,7 @@ class Browser:
         original_handles = self._driver_instance.window_handles
         this_window = self._driver_instance.current_window_handle
         idx = original_handles.index(this_window)
-        next_window = original_handles[(idx+offset) % len(original_handles)]
+        next_window = original_handles[(idx + offset) % len(original_handles)]
         return next_window
 
     def find(self, element):
@@ -962,7 +961,7 @@ class Browser:
 
             if isinstance(element, ShadowElement):
                 el = context.find_element(*element.locator())
-                return self.execute_js('return arguments[0].shadowRoot;', el)
+                return self.execute_js("return arguments[0].shadowRoot;", el)
             else:
                 return context.find_element(*element.locator())
         except NoSuchElementException as e:
@@ -978,16 +977,12 @@ class Browser:
 
     def _filter_by_attributes(self, els, attributes):
         for k, v in attributes.items():
-            els = list(filter(
-                lambda el: el.get_attribute(k) == v,
-                els))
+            els = list(filter(lambda el: el.get_attribute(k) == v, els))
         return els
 
     def _match_visible(self, element):
         els = self._match(element)
-        nodes = list(filter(
-            lambda el: el.is_displayed(),
-            els))
+        nodes = list(filter(lambda el: el.is_displayed(), els))
         return nodes
 
     def _match_first_or_fail(self, element):
@@ -995,14 +990,14 @@ class Browser:
         els = self._match(element)
         self._disable_implicit_wait()
         if not els:
-            raise Exception("Element {0} was not found.".format(element))
+            raise NoSuchElementException(f"No such element: Unable to locate element: {element}")
         return els[0]
 
     def _match(self, element):
         return self.finds(element)
 
     def _enable_implicit_wait(self):
-        self.get_driver().implicitly_wait(SettingsManager.get('implicit_timeout'))
+        self.get_driver().implicitly_wait(SettingsManager.get("implicit_timeout"))
 
     def _disable_implicit_wait(self):
         self.get_driver().implicitly_wait(0)
