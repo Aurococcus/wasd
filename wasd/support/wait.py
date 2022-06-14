@@ -45,4 +45,7 @@ class Wait(object):
             time.sleep(self._poll)
             if time.time() > end_time:
                 break
-        raise TimeoutException(last_exc.msg, screen, stacktrace)
+
+        if last_exc:
+            raise exc
+        raise TimeoutException(message, screen, stacktrace)
