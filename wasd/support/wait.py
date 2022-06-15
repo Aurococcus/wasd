@@ -47,5 +47,5 @@ class Wait(object):
                 break
 
         if last_exc:
-            raise exc
+            raise last_exc
         raise TimeoutException(message, screen, stacktrace)
