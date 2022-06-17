@@ -15,6 +15,7 @@ class SettingsManager:
         'port':     '4444',
         'path':     '/wd/hub',
         'implicit_timeout': 5,
+        "page_load_timeout": 15,
         'window_size':      '800x600'
     }
 

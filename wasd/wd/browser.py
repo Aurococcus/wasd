@@ -51,6 +51,7 @@ class Browser:
             self._driver_instance = remote_driver
 
         self._driver_instance.implicitly_wait(SettingsManager.get("implicit_timeout"))
+        self._driver_instance.set_page_load_timeout(SettingsManager.get("page_load_timeout"))
         self._driver_instance.maximize_window()
 
         return self._driver_instance
