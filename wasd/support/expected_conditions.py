@@ -12,7 +12,7 @@ class visibility_of(object):
 
     def __call__(self, browser):
         try:
-            return _element_if_visible(browser._match_first_or_fail(self.element))
+            return _element_if_visible(browser.find(self.element))
         except StaleElementReferenceException:
             return False
 
@@ -24,7 +24,7 @@ class invisibility_of(object):
     def __call__(self, browser):
         try:
             return _element_if_visible(
-                browser._match_first_or_fail(self.element),
+                browser.find(self.element),
                 visibility=False,
             )
         except (NoSuchElementException, StaleElementReferenceException):
@@ -38,7 +38,7 @@ class staleness_of(object):
     def __call__(self, browser):
         try:
             # Calling any method forces a staleness check
-            browser._match_first_or_fail(self.element).is_enabled()
+            browser.find(self.element).is_enabled()
             return False
         except StaleElementReferenceException:
             return True
